@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import MapWrapper from "@/components/MapWrapper";
 import Navbar from "@/components/Navbar";
+import { usePropiedadesSocket } from "@/hooks/usePropiedadesSocket";
 
 // Datos simulados - Listos para reemplazar con datos de Supabase
 const mockProperties = [
-  { 
-    id: 1, 
-    lat: -0.9536, 
-    lng: -80.7371, 
+  {
+    id: 1,
+    lat: -0.9536,
+    lng: -80.7371,
     price: '$120', 
     title: 'Departamento Céntrico', 
     image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80',
@@ -21,8 +22,8 @@ const mockProperties = [
   },
   { 
     id: 2, 
-    lat: -0.9500, 
-    lng: -80.7400, 
+    lat: -0.95, 
+    lng: -80.74, 
     price: '$85', 
     title: 'Casa Moderna', 
     image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80',
@@ -34,8 +35,8 @@ const mockProperties = [
   },
   { 
     id: 3, 
-    lat: -0.9580, 
-    lng: -80.7350, 
+    lat: -0.958, 
+    lng: -80.735, 
     price: '$150', 
     title: 'Penthouse con Vista', 
     image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80',
@@ -43,12 +44,12 @@ const mockProperties = [
     beds: 3,
     baths: 2,
     area: 130,
-    rating: 5.0
+    rating: 5
   },
   { 
     id: 4, 
-    lat: -0.9520, 
-    lng: -80.7320, 
+    lat: -0.952, 
+    lng: -80.732, 
     price: '$95', 
     title: 'Apartamento Amoblado', 
     image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80',
@@ -60,8 +61,8 @@ const mockProperties = [
   },
   { 
     id: 5, 
-    lat: -0.9560, 
-    lng: -80.7380, 
+    lat: -0.956, 
+    lng: -80.738, 
     price: '$110', 
     title: 'Suite Ejecutiva', 
     image: 'https://images.unsplash.com/photo-1536376072261-38c75010e6c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80',
@@ -86,11 +87,15 @@ const mockProperties = [
   },
 ];
 
+
 export default function Home() {
-  const [favorites, setFavorites] = useState(new Set());
+  const [favorites, setFavorites] = useState(new Set<number>());
   const [showMapMobile, setShowMapMobile] = useState(false);
 
-  const toggleFavorite = (id) => {
+  // ✅ HOOK SOCKET (solo se ejecuta)
+  usePropiedadesSocket();
+
+  const toggleFavorite = (id: number) => {
     setFavorites(prev => {
       const newFavorites = new Set(prev);
       if (newFavorites.has(id)) {
