@@ -1,9 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import PropTypes from 'prop-types';
 
-// Importar el componente Map sin SSR para evitar el error "window is not defined"
-const Map = dynamic(() => import('./Map'), {
+const DynamicMap = dynamic(() => import('./Map'), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full flex items-center justify-center bg-gray-100">
@@ -13,7 +13,15 @@ const Map = dynamic(() => import('./Map'), {
 });
 
 const MapWrapper = ({ properties }) => {
-  return <Map properties={properties} />;
+  return <DynamicMap properties={properties} />;
+};
+
+MapWrapper.propTypes = {
+  properties: PropTypes.arrayOf(PropTypes.object),
+};
+
+MapWrapper.defaultProps = {
+  properties: [],
 };
 
 export default MapWrapper;

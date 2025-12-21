@@ -1,21 +1,39 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { socket } from "@/services/socket";
+import { useEffect } from 'react';
+import { io } from 'socket.io-client';
+import { usePropiedades } from './usePropiedades';
 
-export const usePropiedadesSocket = () => {
+const SOCKET_URL = 'http://localhost:3000';
+
+type EstadoPayload = {
+  id_propiedad: number | string;
+  estado: string;
+};
+
+export function usePropiedadesSocket() {
+  const { setPropiedades } = usePropiedades();
+
   useEffect(() => {
-    socket.on("propiedad:estado-cambiado", (data) => {
-      console.log("📡 Estado cambiado (WS):", data);
-    });
+    const socket = io(SOCKET_URL);
 
-    socket.on("propiedad:servicios", (data) => {
-      console.log("🛠 Servicios actualizados (WS):", data);
+    socket.on('connect', () => {
+      console.log('🟢 WS conectado:', socket.id);
     });
+    socket.on("propiedad:estado-cambiado", (payload) => {
+    console.log("📦 Estado recibido por WS:", payload);
+
+  setPropiedades(prev =>
+    prev.map(p =>
+      p.id === payload.id_propiedad
+        ? { ...p, estado: payload.estado }
+        : p
+    )
+  );
+});
 
     return () => {
-      socket.off("propiedad:estado-cambiado");
-      socket.off("propiedad:servicios");
+      socket.disconnect();
     };
-  }, []);
-};
+  }, [setPropiedades]);
+}
