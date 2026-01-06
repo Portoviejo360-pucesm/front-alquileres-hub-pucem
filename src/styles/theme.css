@@ -1,0 +1,158 @@
+/* src/styles/theme.css */
+
+:root {
+  --brand-green: #2d5a4c;      /* El verde oscuro corporativo */
+  --brand-bg: #f5f1e4;         /* El fondo crema */
+  --brand-red: #e11d48;        /* El rojo del logo */
+  --input-border: #d1e7dd;     /* Borde suave para inputs */
+  --white: #ffffff;
+  --text-dark: #111827;        /* Texto oscuro (Agregado para evitar error en variables) */
+}
+
+/* --- Layout Público --- */
+.public-container {
+  min-height: 100vh;
+  background-color: var(--brand-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.public-main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* --- Card de Login Centrada --- */
+.login-card {
+  background: var(--white);
+  width: 90%; /* Para móviles */
+  max-width: 450px;
+  padding: 50px 40px;
+  border-radius: 35px; /* Coincide con la imagen */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-title {
+  color: var(--brand-green);
+  font-size: 26px;
+  font-weight: 700;
+  margin: 25px 0 30px 0;
+}
+
+/* --- Inputs Unificados --- */
+/* Eliminé .custom-input y dejé solo este para mayor orden */
+.auth-input {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 50px; /* Píldora completa */
+  border: 1.5px solid var(--input-border);
+  font-size: 15px;
+  margin-bottom: 20px;
+  outline: none;
+  color: var(--text-dark);
+  background-color: var(--white);
+  transition: all 0.3s ease;
+}
+
+.auth-input:focus {
+  border-color: var(--brand-green);
+  background-color: #fafdfc; /* Sutil cambio de fondo al enfocar */
+}
+
+.auth-input::placeholder {
+  color: #9ca3af;
+}
+
+/* --- Botones --- */
+.btn-ingresar {
+  width: 100%;
+  padding: 15px;
+  border-radius: 50px;
+  border: none;
+  background-color: var(--brand-green);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.2s ease, opacity 0.2s;
+  text-transform: uppercase;
+}
+
+.btn-ingresar:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+/* --- Header / TopBar Styles --- */
+/* Estos estilos reemplazan o complementan el inline-style de tu Navbar */
+
+
+.btn-ghost {
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 20px;
+  border-radius: 50px;
+  border: 1px solid #e5e7eb;
+  color: var(--text-dark);
+  background: var(--white);
+  transition: background 0.2s;
+}
+
+.btn-ghost:hover {
+  background: #f9fafb;
+}
+
+.btn-register {
+  background-color: var(--brand-green);
+  color: var(--white);
+  padding: 8px 20px;
+  border-radius: 50px; /* Corregido: antes era 8px, ahora es píldora como el diseño */
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(45, 90, 76, 0.2);
+  transition: opacity 0.2s;
+}
+
+.btn-register:hover {
+  opacity: 0.9;
+}
+
+
+/* Agregar al final de src/styles/theme.css */
+
+/* --- Animaciones --- */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Estados de botón deshabilitado --- */
+.btn-ingresar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+  .login-card {
+    padding: 40px 30px;
+    max-width: 100%;
+  }
+  
+  .login-title {
+    font-size: 22px;
+  }
+}

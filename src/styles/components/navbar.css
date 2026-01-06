@@ -1,0 +1,86 @@
+
+/* --- ESTILOS DEL NAVBAR PÚBLICO (PublicTopBar) --- */
+
+.header-public {
+  height: 80px; /* Un poco más alto para dar aire como en la imagen */
+  background: var(--white);
+  /* border-bottom: 1px solid #f0f0f0;  <-- Opcional: la imagen se ve muy limpia, sin borde fuerte */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5%; /* Margen lateral responsivo */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10); 
+  border-bottom: 0.5px solid #e9e9e9; /* Línea muy sutil en el borde inferior */
+}
+
+/* Logo Container */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.logo-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--brand-red);
+  color: var(--white);
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+}
+
+.logo-text {
+  font-weight: 800;
+  font-size: 20px;
+  color: #2c3e50; /* Un gris muy oscuro, casi negro */
+  letter-spacing: -0.5px;
+}
+
+/* Navegación */
+.nav-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Botón Iniciar Sesión (Píldora blanca con borde) */
+.btn-nav-login {
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 50px; /* Píldora completa */
+  border: 1px solid #e5e7eb;
+  color: var(--text-dark);
+  background: var(--white);
+  transition: all 0.2s ease;
+}
+
+.btn-nav-login:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* Botón Regístrate (Rectángulo redondeado verde) */
+.btn-nav-register {
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 8px; /* OJO: En la imagen NO es píldora, es redondeado leve */
+  border: none;
+  color: var(--white);
+  background-color: var(--brand-green);
+  transition: opacity 0.2s ease;
+}
+
+.btn-nav-register:hover {
+  opacity: 0.9;
+}
