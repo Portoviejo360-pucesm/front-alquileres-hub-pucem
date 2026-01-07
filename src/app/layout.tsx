@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import '@/styles/theme.css';
 import '@/styles/components/topbar.css';
+import '@/styles/components/auth-pages.css';
 import '@/styles/components/dashboard.css';
 import './globals.css';
 
