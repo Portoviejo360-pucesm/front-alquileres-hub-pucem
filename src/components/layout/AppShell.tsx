@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import TopBar from './TopBar';
+import TopBar from './PrivateTopBar';
 import Sidebar from './Sidebar';
 
 interface AppShellProps {

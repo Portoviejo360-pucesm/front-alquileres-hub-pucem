@@ -4,7 +4,7 @@
 "use client";
 
 import Link from "next/link";
-import '../../styles/components/navbar.css';
+import '../../styles/components/topbar.css';
 import '../../styles/theme.css';
 
 export default function PublicTopBar() {
