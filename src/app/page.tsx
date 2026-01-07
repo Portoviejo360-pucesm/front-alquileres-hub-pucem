@@ -1,77 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import MapWrapper from '@/components/MapWrapper';
 import { usePropiedades } from '@/hooks/usePropiedades';
 import { usePropiedadesSocket } from '@/hooks/usePropiedadesSocket';
 import { getColorByEstado } from '@/utils/getColorByEstado';
 
-// ===============================
-// MOCK SOLO PARA VISUAL (SIN LÓGICA)
-// ===============================
-const mockProperties = [
-  {
-    id: 1,
-    lat: -0.9536,
-    lng: -80.7371,
-    price: '$120',
-    title: 'Departamento Céntrico',
-    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267',
-    location: 'Portoviejo, Centro',
-    beds: 2,
-    baths: 1,
-    area: 65,
-    rating: 4.8,
-  },
-  {
-    id: 2,
-    lat: -0.95,
-    lng: -80.74,
-    price: '$85',
-    title: 'Casa Moderna',
-    image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688',
-    location: 'Portoviejo, Norte',
-    beds: 3,
-    baths: 2,
-    area: 110,
-    rating: 4.9,
-  },
-  {
-    id: 3,
-    lat: -0.958,
-    lng: -80.735,
-    price: '$150',
-    title: 'Penthouse con Vista',
-    image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb',
-    location: 'Portoviejo, Sur',
-    beds: 3,
-    baths: 2,
-    area: 130,
-    rating: 5,
-  },
-];
-
-// ===============================
-// COMPONENTE PRINCIPAL
-// ===============================
 export default function Home() {
-  const { propiedades, setPropiedades } = usePropiedades();
+  // 🔹 Propiedades YA normalizadas desde el contexto
+  const { propiedades } = usePropiedades();
 
-  // 🔌 SOLO ESCUCHA Y SINCRONIZA (NO DEVUELVE DATA)
+  // 🔌 WebSocket (solo sincroniza estado)
   usePropiedadesSocket();
-
-  // 🟡 Fallback solo si el backend aún no responde
-  useEffect(() => {
-    if (propiedades.length === 0) {
-      setPropiedades(
-        mockProperties.map(p => ({
-          ...p,
-          estado: 'DISPONIBLE', // estado inicial neutro
-        }))
-      );
-    }
-  }, [propiedades.length, setPropiedades]);
 
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [showMapMobile, setShowMapMobile] = useState(false);
@@ -85,12 +26,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-cream">
+    <div className="min-h-screen bg-brand-cream text-gray-900">
       <Navbar />
 
       <main className="flex flex-col md:flex-row h-[calc(100vh-89px)] overflow-hidden">
 
-        {/* LISTADO */}
+        {/* ================= LISTADO ================= */}
         <section
           className={`w-full md:w-[55%] bg-white ${
             showMapMobile ? 'hidden md:block' : 'block'
@@ -100,13 +41,14 @@ export default function Home() {
             {propiedades.length} propiedades disponibles en Portoviejo
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 overflow-y-auto">
+          {/* SCROLL INDEPENDIENTE */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 overflow-y-auto max-h-full">
             {propiedades.map(prop => (
               <div
-                key={prop.id}
-                className="relative rounded-xl shadow hover:shadow-lg overflow-hidden"
+                key={prop.id} // 🔑 key correcto
+                className="relative rounded-xl shadow hover:shadow-lg overflow-hidden bg-white"
               >
-                {/* BADGE DE ESTADO (100% DINÁMICO) */}
+                {/* BADGE DE ESTADO */}
                 <span
                   className={`absolute top-2 left-2 px-3 py-1 text-xs text-white rounded-full font-bold ${getColorByEstado(
                     prop.estado
@@ -115,6 +57,7 @@ export default function Home() {
                   {prop.estado}
                 </span>
 
+                {/* IMAGEN */}
                 <img
                   src={prop.image}
                   alt={prop.title}
@@ -127,7 +70,7 @@ export default function Home() {
 
                   <div className="flex justify-between items-center mt-2">
                     <span className="font-bold">
-                      {prop.price}/noche
+                      {prop.price}/mes
                     </span>
 
                     <button onClick={() => toggleFavorite(prop.id)}>
@@ -140,7 +83,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* MAPA */}
+        {/* ================= MAPA ================= */}
         <section className="hidden md:block flex-1">
           <MapWrapper properties={propiedades} />
         </section>
@@ -148,7 +91,7 @@ export default function Home() {
         {/* BOTÓN MAPA MÓVIL */}
         <button
           onClick={() => setShowMapMobile(!showMapMobile)}
-          className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-black text-white rounded-full"
+          className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-black text-white rounded-full z-50"
         >
           {showMapMobile ? 'Ver Lista' : 'Ver Mapa'}
         </button>
