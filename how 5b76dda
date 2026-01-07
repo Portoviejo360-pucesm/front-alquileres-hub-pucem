@@ -1,0 +1,67 @@
+[33mcommit 5b76ddaa89f5d1819c25b4cdf77c34664967ec09[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mregistro-arrendador-propiedad[m[33m)[m
+Author: amesitos <uh230839@gmail.com>
+Date:   Tue Jan 6 21:57:02 2026 -0500
+
+    merge cambios
+
+[33mcommit 866bf8131685b8d77063d3396cedcf8d4f6ec7b6[m[33m ([m[1;31morigin/registro-arrendador-propiedad[m[33m)[m
+Merge: 3f435ba f8057c0
+Author: Amormac <gonzalomoreira1939@gmail.com>
+Date:   Tue Jan 6 21:52:29 2026 -0500
+
+    Merge branch 'registro-arrendador-propiedad' of https://github.com/Portoviejo360-pucesm/front-alquileres-hub-pucem into registro-arrendador-propiedad
+
+[33mcommit 3f435ba3812f032e390f2313d7f2ce50ef999030[m
+Author: Amormac <gonzalomoreira1939@gmail.com>
+Date:   Tue Jan 6 21:47:14 2026 -0500
+
+    creado el modulo de documentacion
+
+[33mcommit f8057c02cfae66ea64c31afdffee51d5bdd3d814[m
+Author: amesitos <uh230839@gmail.com>
+Date:   Tue Jan 6 21:46:53 2026 -0500
+
+    update
+
+[33mcommit 7768e1891cd0e42438dd252cdde866dc2bc7d052[m
+Author: amesitos <uh230839@gmail.com>
+Date:   Tue Jan 6 20:51:29 2026 -0500
+
+    update
+
+[33mcommit 966127913149d784e1cdc1948f54c799d1b3b867[m
+Author: amesitos <uh230839@gmail.com>
+Date:   Tue Jan 6 20:40:31 2026 -0500
+
+    edit: protected navbar
+
+[33mcommit 9597936a5d00160ba5be75ce6006e035dd371c13[m
+Author: amesitos <uh230839@gmail.com>
+Date:   Tue Jan 6 20:31:58 2026 -0500
+
+    update: dashboard
+
+[33mcommit 39f3f9c988030f0325a29b899adcb8097cb0b7cc[m
+Author: amesitos <uh230839@gmail.com>
+Date:   Tue Jan 6 15:05:46 2026 -0500
+
+    login y registro
+
+[33mcommit 34fb568cf5f7cc719ea1dcb062d9c91d21cb12f3[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Merge: 7c0e3bb bc16581
+Author: amesitos <uh230839@gmail.com>
+Date:   Wed Dec 3 22:27:42 2025 -0500
+
+    Eliminando README para resolver conflicto
+
+[33mcommit bc16581a4276cd21dca5b9ae9da23ecda73a62d7[m
+Author: Andrea Campaña <161412285+amesitos@users.noreply.github.com>
+Date:   Wed Dec 3 22:23:36 2025 -0500
+
+    Initial commit
+
+[33mcommit 7c0e3bb07eada4abe8f0d8bbeee9940e72300893[m
+Author: amesitos <uh230839@gmail.com>
+Date:   Wed Dec 3 22:20:41 2025 -0500
+
+    Initial commit from Create Next App

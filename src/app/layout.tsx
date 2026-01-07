@@ -3,6 +3,9 @@ import '@/styles/theme.css';
 import '@/styles/components/topbar.css';
 import '@/styles/components/auth-pages.css';
 import '@/styles/components/dashboard.css';
+import '@/styles/components/arrendadores.css';
+import '@/styles/components/propiedades.css';
+import '@/styles/components/perfil.css';
 import './globals.css';
 
 export const metadata: Metadata = {
