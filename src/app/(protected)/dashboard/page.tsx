@@ -6,12 +6,22 @@ import { useAuthStore } from '@/store/auth.store';
 export default function DashboardPage() {
   const { user } = useAuthStore();
 
-  // Datos mock para demostración
+  // Calcular stats dinámicamente desde datos reales del usuario
+  const propiedadesUsuario = user?.propiedades || [];
+  const propiedadesActivas = propiedadesUsuario.filter(p => p.estado.nombre === 'disponible').length;
+  const propiedadesOcupadas = propiedadesUsuario.filter(p => p.estado.nombre === 'ocupada').length;
+  const ingresosMensuales = propiedadesOcupadas > 0
+    ? propiedadesUsuario
+      .filter(p => p.estado.nombre === 'ocupada')
+      .reduce((sum, p) => sum + p.precioMensual, 0)
+    : 0;
+
+  // Stats con datos reales
   const stats = [
     {
       label: 'Propiedades Activas',
-      value: '12',
-      change: '+3 este mes',
+      value: propiedadesActivas.toString(),
+      change: `${propiedadesUsuario.length} total`,
       changeType: 'positive',
       icon: (
         <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
@@ -22,9 +32,9 @@ export default function DashboardPage() {
     },
     {
       label: 'Arrendadores',
-      value: '8',
-      change: '+2 este mes',
-      changeType: 'positive',
+      value: user?.perfilVerificado?.estaVerificado ? '1' : '0',
+      change: user?.perfilVerificado?.estaVerificado ? 'Verificado' : 'No verificado',
+      changeType: user?.perfilVerificado?.estaVerificado ? 'positive' : 'neutral',
       icon: (
         <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
           <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
@@ -34,8 +44,8 @@ export default function DashboardPage() {
     },
     {
       label: 'Propiedades Ocupadas',
-      value: '7',
-      change: '+1 este mes',
+      value: propiedadesOcupadas.toString(),
+      change: `${propiedadesActivas} disponibles`,
       changeType: 'positive',
       icon: (
         <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
@@ -47,8 +57,8 @@ export default function DashboardPage() {
     },
     {
       label: 'Ingresos Mensuales',
-      value: '$2,450',
-      change: '+$320 este mes',
+      value: `$${ingresosMensuales.toFixed(0)}`,
+      change: `${propiedadesOcupadas} propiedades`,
       changeType: 'positive',
       icon: (
         <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
@@ -87,32 +97,15 @@ export default function DashboardPage() {
     },
   ];
 
-  const recentProperties = [
-    {
-      id: 1,
-      title: 'Departamento Moderno',
-      location: 'Av. Universitaria, Portoviejo',
-      price: '$350',
-      status: 'disponible',
-      image: null
-    },
-    {
-      id: 2,
-      title: 'Casa Familiar',
-      location: 'Calle 10 de Agosto',
-      price: '$450',
-      status: 'ocupada',
-      image: null
-    },
-    {
-      id: 3,
-      title: 'Estudio Céntrico',
-      location: 'Centro Histórico',
-      price: '$280',
-      status: 'disponible',
-      image: null
-    },
-  ];
+  // Usar propiedades reales del usuario (últimas 3)
+  const recentProperties = propiedadesUsuario.slice(0, 3).map(prop => ({
+    id: prop.id,
+    title: prop.tituloAnuncio,
+    location: 'Portoviejo', // El backend no devuelve ubicación en el listado
+    price: `$${prop.precioMensual}`,
+    status: prop.estado.nombre,
+    image: null
+  }));
 
   const monthlyData = [
     { month: 'Ene', value: 65 },
@@ -131,7 +124,7 @@ export default function DashboardPage() {
           Dashboard
         </h1>
         <p className="dashboard-subtitle">
-          Bienvenido de vuelta, {user?.nombre || 'Usuario'}. Aquí está un resumen de tu actividad.
+          Bienvenido de vuelta, {user?.nombresCompletos || 'Usuario'}. Aquí está un resumen de tu actividad.
         </p>
       </div>
 
@@ -182,7 +175,7 @@ export default function DashboardPage() {
             <h2 className="card-title">Actividad Reciente</h2>
             <Link href="/actividad" className="card-link">Ver todo</Link>
           </div>
-          
+
           <div className="activity-list">
             {recentActivities.map((activity, index) => (
               <div key={index} className="activity-item">
@@ -207,15 +200,15 @@ export default function DashboardPage() {
             <h2 className="card-title">Propiedades Recientes</h2>
             <Link href="/propiedades" className="card-link">Ver todas</Link>
           </div>
-          
+
           <div className="properties-list">
             {recentProperties.map((property) => (
-              <Link 
-                key={property.id} 
+              <Link
+                key={property.id}
                 href={`/propiedades/${property.id}`}
                 className="property-item"
               >
-                <div 
+                <div
                   className="property-image"
                   style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -235,8 +228,8 @@ export default function DashboardPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span className="property-price">{property.price}/mes</span>
                     <span className={`property-badge ${property.status}`}>
-                      {property.status === 'disponible' ? 'Disponible' : 
-                       property.status === 'ocupada' ? 'Ocupada' : 'Mantenimiento'}
+                      {property.status === 'disponible' ? 'Disponible' :
+                        property.status === 'ocupada' ? 'Ocupada' : 'Mantenimiento'}
                     </span>
                   </div>
                 </div>
@@ -254,7 +247,7 @@ export default function DashboardPage() {
         <div className="chart-container">
           {monthlyData.map((data, index) => (
             <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div 
+              <div
                 className="chart-bar"
                 style={{ height: `${data.value}%` }}
                 title={`${data.month}: ${data.value}%`}

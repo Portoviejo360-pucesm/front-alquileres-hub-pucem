@@ -1,52 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { propiedadesApi } from '@/lib/api/propiedades.api';
 
 export default function PropiedadesPage() {
-  // Datos mock
-  const [propiedades] = useState([
-    {
-      id: 1,
-      titulo: 'Departamento Moderno en el Centro',
-      descripcion: 'Hermoso departamento de 2 habitaciones con vista panorámica, cerca de universidades y centros comerciales.',
-      direccion: 'Av. Universitaria #123',
-      precio: 350,
-      estado: 'disponible',
-      esAmoblado: true,
-      arrendador: 'Juan Pérez'
-    },
-    {
-      id: 2,
-      titulo: 'Casa Familiar en Los Tamarindos',
-      descripcion: 'Amplia casa de 3 habitaciones con patio y garaje, ideal para familias.',
-      direccion: 'Urbanización Los Tamarindos',
-      precio: 450,
-      estado: 'ocupada',
-      esAmoblado: false,
-      arrendador: 'María Rodríguez'
-    },
-    {
-      id: 3,
-      titulo: 'Estudio Céntrico Amoblado',
-      descripcion: 'Acogedor estudio totalmente equipado, perfecto para estudiantes.',
-      direccion: 'Centro Histórico',
-      precio: 280,
-      estado: 'disponible',
-      esAmoblado: true,
-      arrendador: 'Carlos Mendoza'
-    },
-    {
-      id: 4,
-      titulo: 'Local Comercial',
-      descripcion: 'Local en zona comercial con alta afluencia de personas.',
-      direccion: 'Av. Principal',
-      precio: 600,
-      estado: 'mantenimiento',
-      esAmoblado: false,
-      arrendador: 'Juan Pérez'
-    },
-  ]);
+  const [propiedades, setPropiedades] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [filters, setFilters] = useState({
     search: '',
@@ -56,22 +17,41 @@ export default function PropiedadesPage() {
     amoblado: 'todos'
   });
 
+  // Cargar propiedades del usuario al montar
+  useEffect(() => {
+    const cargarPropiedades = async () => {
+      try {
+        setLoading(true);
+        const data = await propiedadesApi.misPropiedades();
+        setPropiedades(data);
+        setError(null);
+      } catch (err: any) {
+        console.error('Error al cargar propiedades:', err);
+        setError(err.message || 'Error al cargar propiedades');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarPropiedades();
+  }, []);
+
   // Filtrar propiedades
   const propiedadesFiltradas = propiedades.filter(prop => {
-    const matchSearch = 
-      prop.titulo.toLowerCase().includes(filters.search.toLowerCase()) ||
-      prop.direccion.toLowerCase().includes(filters.search.toLowerCase());
+    const matchSearch =
+      prop.tituloAnuncio?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      prop.direccion?.toLowerCase().includes(filters.search.toLowerCase());
 
-    const matchEstado = 
-      filters.estado === 'todos' || prop.estado === filters.estado;
+    const matchEstado =
+      filters.estado === 'todos' || prop.estado?.nombre === filters.estado;
 
-    const matchPrecioMin = 
-      !filters.precioMin || prop.precio >= parseFloat(filters.precioMin);
+    const matchPrecioMin =
+      !filters.precioMin || prop.precioMensual >= parseFloat(filters.precioMin);
 
-    const matchPrecioMax = 
-      !filters.precioMax || prop.precio <= parseFloat(filters.precioMax);
+    const matchPrecioMax =
+      !filters.precioMax || prop.precioMensual <= parseFloat(filters.precioMax);
 
-    const matchAmoblado = 
+    const matchAmoblado =
       filters.amoblado === 'todos' ||
       (filters.amoblado === 'si' && prop.esAmoblado) ||
       (filters.amoblado === 'no' && !prop.esAmoblado);
@@ -87,13 +67,42 @@ export default function PropiedadesPage() {
   };
 
   const getEstadoBadgeText = (estado: string) => {
-    const estados = {
+    const estados: Record<string, string> = {
       disponible: 'Disponible',
       ocupada: 'Ocupada',
       mantenimiento: 'Mantenimiento'
     };
-    return estados[estado as keyof typeof estados] || estado;
+    return estados[estado] || estado;
   };
+
+  if (loading) {
+    return (
+      <div className="propiedades-container">
+        <div className="propiedades-header">
+          <h1 className="propiedades-title">Propiedades</h1>
+        </div>
+        <div style={{ textAlign: 'center', padding: '40px' }}>
+          <p>Cargando propiedades...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="propiedades-container">
+        <div className="propiedades-header">
+          <h1 className="propiedades-title">Propiedades</h1>
+        </div>
+        <div style={{ textAlign: 'center', padding: '40px', color: '#ef4444' }}>
+          <p>Error: {error}</p>
+          <button onClick={() => window.location.reload()} style={{ marginTop: '16px', padding: '8px 16px', borderRadius: '8px', border: '1px solid #e5e7eb', background: 'white', cursor: 'pointer' }}>
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="propiedades-container">
@@ -190,8 +199,8 @@ export default function PropiedadesPage() {
               <div className="propiedad-image">
                 SIN FOTO
                 <div className="propiedad-badge-container">
-                  <span className={`propiedad-badge ${propiedad.estado}`}>
-                    {getEstadoBadgeText(propiedad.estado)}
+                  <span className={`propiedad-badge ${propiedad.estado?.nombre}`}>
+                    {getEstadoBadgeText(propiedad.estado?.nombre || '')}
                   </span>
                   {propiedad.esAmoblado && (
                     <span className="propiedad-badge amoblado">Amoblado</span>
@@ -200,13 +209,13 @@ export default function PropiedadesPage() {
               </div>
 
               <div className="propiedad-content">
-                <h3 className="propiedad-title">{propiedad.titulo}</h3>
-                
+                <h3 className="propiedad-title">{propiedad.tituloAnuncio}</h3>
+
                 <div className="propiedad-location">
                   <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
-                  {propiedad.direccion}
+                  {propiedad.direccion || 'Portoviejo'}
                 </div>
 
                 <p className="propiedad-description">{propiedad.descripcion}</p>
@@ -214,13 +223,13 @@ export default function PropiedadesPage() {
                 <div className="propiedad-footer">
                   <div>
                     <div className="propiedad-price">
-                      ${propiedad.precio}
+                      ${propiedad.precioMensual}
                       <span className="propiedad-price-label">/mes</span>
                     </div>
                   </div>
-                  
+
                   <div className="propiedad-actions">
-                    <button 
+                    <button
                       className="btn-icon view"
                       onClick={(e) => {
                         e.preventDefault();
@@ -232,7 +241,7 @@ export default function PropiedadesPage() {
                         <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
                       </svg>
                     </button>
-                    <button 
+                    <button
                       className="btn-icon edit"
                       onClick={(e) => {
                         e.preventDefault();

@@ -2,23 +2,24 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/store/auth.store';
+import { arrendadoresApi } from '@/lib/api/arrendadores.api';
 
 export default function PerfilPage() {
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  
-  // Datos mock del usuario (en producción vendrían del store)
-  const [userData, setUserData] = useState({
-    nombre: user?.nombre || 'Juan Pérez García',
-    email: user?.email || 'juan.perez@email.com',
-    telefono: '0987654321',
-    cedula: '1234567890',
-    direccion: 'Av. Principal #123, Portoviejo',
+
+  // Usar datos reales del usuario
+  const userData = {
+    nombre: user?.nombresCompletos || '',
+    email: user?.correo || '',
+    telefono: user?.perfilVerificado?.telefonoContacto || '',
+    cedula: user?.perfilVerificado?.cedulaRuc || '',
+    direccion: '',
     ciudad: 'Portoviejo',
-    esArrendadorVerificado: user?.esArrendadorVerificado || false,
-    fechaRegistro: '2024-01-15'
-  });
+    esArrendadorVerificado: user?.perfilVerificado?.estaVerificado || false,
+    fechaRegistro: user?.fechaRegistro || ''
+  };
 
   const [editData, setEditData] = useState({ ...userData });
   const [passwordData, setPasswordData] = useState({
@@ -27,11 +28,13 @@ export default function PerfilPage() {
     confirmPassword: ''
   });
 
-  // Estadísticas mock
+  // Estadísticas reales desde propiedades del usuario
   const stats = {
-    propiedades: 3,
-    arrendamientos: 7,
-    tiempoRegistrado: '6 meses'
+    propiedades: user?.propiedades?.length || 0,
+    arrendamientos: user?.propiedades?.filter(p => p.estado.nombre === 'ocupada').length || 0,
+    tiempoRegistrado: user?.fechaRegistro
+      ? `${Math.floor((new Date().getTime() - new Date(user.fechaRegistro).getTime()) / (1000 * 60 * 60 * 24 * 30))} meses`
+      : '0 meses'
   };
 
   const getInitials = (name: string) => {
@@ -60,16 +63,32 @@ export default function PerfilPage() {
   const handleSaveProfile = async () => {
     setLoading(true);
     try {
-      // TODO: Llamar al API para actualizar perfil
-      console.log('Actualizar perfil:', editData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setUserData(editData);
+      // Llamar al API para actualizar perfil
+      await arrendadoresApi.actualizarPerfil({
+        nombresCompletos: editData.nombre,
+        telefonoContacto: editData.telefono,
+        cedulaRuc: editData.cedula,
+        biografiaCorta: ''
+      });
+
+      // Actualizar el usuario en el store
+      if (user) {
+        setUser({
+          ...user,
+          nombresCompletos: editData.nombre,
+          perfilVerificado: {
+            ...user.perfilVerificado!,
+            telefonoContacto: editData.telefono,
+            cedulaRuc: editData.cedula
+          }
+        });
+      }
+
       setIsEditing(false);
       alert('Perfil actualizado exitosamente');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Error al actualizar perfil');
+      alert(error.message || 'Error al actualizar perfil');
     } finally {
       setLoading(false);
     }
@@ -91,7 +110,7 @@ export default function PerfilPage() {
       // TODO: Llamar al API para cambiar contraseña
       console.log('Cambiar contraseña');
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
       alert('Contraseña actualizada exitosamente');
     } catch (error) {
@@ -103,16 +122,25 @@ export default function PerfilPage() {
   };
 
   const handleSolicitarVerificacion = async () => {
+    if (!userData.telefono || !userData.cedula) {
+      alert('Por favor completa tu perfil (teléfono y cédula) antes de solicitar verificación');
+      return;
+    }
+
     if (confirm('¿Deseas solicitar la verificación como arrendador?')) {
       setLoading(true);
       try {
-        // TODO: Llamar al API
-        console.log('Solicitar verificación');
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        alert('Solicitud enviada exitosamente');
-      } catch (error) {
+        // Llamar al API para solicitar verificación
+        await arrendadoresApi.solicitarVerificacion({
+          cedulaRuc: userData.cedula,
+          telefonoContacto: userData.telefono,
+          biografiaCorta: 'Solicitud de verificación'
+        });
+
+        alert('Solicitud enviada exitosamente. Recibirás una notificación cuando sea procesada.');
+      } catch (error: any) {
         console.error('Error:', error);
-        alert('Error al enviar solicitud');
+        alert(error.message || 'Error al enviar solicitud');
       } finally {
         setLoading(false);
       }
@@ -185,7 +213,7 @@ export default function PerfilPage() {
                 <p className="verificacion-text">
                   Solicita la verificación para publicar propiedades y acceder a más funciones.
                 </p>
-                <button 
+                <button
                   className="btn-solicitar-verificacion"
                   onClick={handleSolicitarVerificacion}
                   disabled={loading}
@@ -201,7 +229,7 @@ export default function PerfilPage() {
             <div className="perfil-card-header">
               <h3 className="perfil-card-title">Información Personal</h3>
               {!isEditing && (
-                <button 
+                <button
                   className="btn-editar-perfil"
                   onClick={() => setIsEditing(true)}
                 >
@@ -319,7 +347,7 @@ export default function PerfilPage() {
                 </div>
 
                 <div className="perfil-form-actions">
-                  <button 
+                  <button
                     className="btn-cancelar-edit"
                     onClick={() => {
                       setEditData({ ...userData });
@@ -328,7 +356,7 @@ export default function PerfilPage() {
                   >
                     Cancelar
                   </button>
-                  <button 
+                  <button
                     className="btn-guardar-edit"
                     onClick={handleSaveProfile}
                     disabled={loading}
@@ -395,7 +423,7 @@ export default function PerfilPage() {
                 </div>
 
                 <div className="perfil-form-actions">
-                  <button 
+                  <button
                     className="btn-guardar-edit"
                     onClick={handleChangePassword}
                     disabled={loading || !passwordData.currentPassword || !passwordData.newPassword}

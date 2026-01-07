@@ -8,11 +8,10 @@ import { useAuthStore } from '@/store/auth.store';
 export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuthStore();
-  
+
   const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    telefono: '',
+    nombresCompletos: '',
+    correo: '',
     password: '',
     confirmPassword: ''
   });
@@ -39,18 +38,36 @@ export default function RegisterPage() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+    if (formData.password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres');
+      setLoading(false);
+      return;
+    }
+
+    // Validar que tenga mayúscula, minúscula y número
+    if (!/[A-Z]/.test(formData.password)) {
+      setError('La contraseña debe contener al menos una letra mayúscula');
+      setLoading(false);
+      return;
+    }
+
+    if (!/[a-z]/.test(formData.password)) {
+      setError('La contraseña debe contener al menos una letra minúscula');
+      setLoading(false);
+      return;
+    }
+
+    if (!/[0-9]/.test(formData.password)) {
+      setError('La contraseña debe contener al menos un número');
       setLoading(false);
       return;
     }
 
     try {
       await register({
-        nombre: formData.nombre,
-        email: formData.email,
-        password: formData.password,
-        telefono: formData.telefono || undefined
+        nombresCompletos: formData.nombresCompletos,
+        correo: formData.correo,
+        password: formData.password
       });
       router.push('/dashboard');
     } catch (err: any) {
@@ -88,32 +105,23 @@ export default function RegisterPage() {
           {/* Nombre Completo */}
           <input
             type="text"
-            name="nombre"
+            name="nombresCompletos"
             placeholder="Nombre completo"
-            value={formData.nombre}
+            value={formData.nombresCompletos}
             onChange={handleChange}
             required
+            minLength={3}
             className="auth-input"
           />
 
           {/* Email */}
           <input
             type="email"
-            name="email"
+            name="correo"
             placeholder="Correo electrónico"
-            value={formData.email}
+            value={formData.correo}
             onChange={handleChange}
             required
-            className="auth-input"
-          />
-
-          {/* Teléfono (opcional) */}
-          <input
-            type="tel"
-            name="telefono"
-            placeholder="Teléfono (opcional)"
-            value={formData.telefono}
-            onChange={handleChange}
             className="auth-input"
           />
 
@@ -121,11 +129,11 @@ export default function RegisterPage() {
           <input
             type="password"
             name="password"
-            placeholder="Contraseña"
+            placeholder="Contraseña (mín. 8 caracteres, mayúscula, minúscula y número)"
             value={formData.password}
             onChange={handleChange}
             required
-            minLength={6}
+            minLength={8}
             className="auth-input"
           />
 
@@ -137,7 +145,7 @@ export default function RegisterPage() {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            minLength={6}
+            minLength={8}
             className="auth-input"
           />
 

@@ -8,9 +8,9 @@ import { useAuthStore } from '@/store/auth.store';
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
-  
+
   const [formData, setFormData] = useState({
-    email: '',
+    correo: '',
     password: ''
   });
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      await login(formData.email, formData.password);
+      await login(formData.correo, formData.password);
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión');
@@ -67,9 +67,9 @@ export default function LoginPage() {
           {/* Email */}
           <input
             type="email"
-            name="email"
+            name="correo"
             placeholder="Correo electrónico"
-            value={formData.email}
+            value={formData.correo}
             onChange={handleChange}
             required
             className="auth-input"
