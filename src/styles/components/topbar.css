@@ -72,7 +72,7 @@
    ======================================== */
 
 .header-public {
-  height: 80px;
+  height: 70px;
   background: var(--white);
   display: flex;
   align-items: center;
@@ -104,8 +104,8 @@
 }
 
 .btn-nav-login:hover {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
+  background-color: #e2e2e2;
+  border-color: #e7e7e7;
 }
 
 .btn-nav-register {
@@ -113,7 +113,7 @@
   font-size: 15px;
   font-weight: 600;
   padding: 10px 24px;
-  border-radius: 8px;
+  border-radius: 15px;
   border: none;
   color: var(--white);
   background-color: var(--brand-green);
@@ -141,7 +141,7 @@
   left: 0;
   right: 0;
   z-index: 100;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0px 10px rgba(0, 0, 0, 0.03);
 }
 
 .header-left {
