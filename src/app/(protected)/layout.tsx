@@ -1,17 +1,53 @@
-"use client";
+// app/(protected)/layout.tsx
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { tokenStorage } from "@/lib/auth/token";
-import AppShell from "@/components/layout/AppShell";
+'use client';
 
-export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/auth.store';
+import AppShell from '@/components/layout/AppShell';
+
+export default function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
+  const { isAuthenticated, loading, loadUser } = useAuthStore();
+
+  // 🚧 MODO DESARROLLO: Comentar este useEffect para permitir acceso sin login
+  /*
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
 
   useEffect(() => {
-    const token = tokenStorage.get();
-    if (!token) router.replace("/login");
-  }, [router]);
+    if (!loading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, loading, router]);
 
-  return <AppShell>{children}</AppShell>;
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        minHeight: '100vh' 
+      }}>
+        <p>Cargando...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+  */
+
+  return (
+    <AppShell>
+      {children}
+    </AppShell>
+  );
 }

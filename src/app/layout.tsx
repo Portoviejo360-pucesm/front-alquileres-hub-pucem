@@ -1,12 +1,12 @@
-// src/app/layout.tsx
-import "./globals.css";
-import { Inter } from 'next/font/google';
+import type { Metadata } from 'next';
+import '@/styles/theme.css';
+import '@/styles/components/navbar.css';
+import '@/styles/components/dashboard.css';
+import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata = {
-  title: "Portoviejo360",
-  description: "Sistema de Gestión de Arriendos",
+export const metadata: Metadata = {
+  title: 'Portoviejo360 - Sistema de Alquileres',
+  description: 'Gestión de propiedades y arrendadores',
 };
 
 export default function RootLayout({
@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

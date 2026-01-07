@@ -1,8 +1,8 @@
 // NAVBAR PÚBLICO (Inicio de sesión / Registro)
+// A MEJORAR
 
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import '../../styles/components/navbar.css';
 import '../../styles/theme.css';

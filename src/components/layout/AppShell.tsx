@@ -1,33 +1,53 @@
-// src/components/layout/AppShell.tsx
-"use client";
+'use client';
 
-import Sidebar from "./Sidebar";
-import TopBar from "./TopBar";
+import { useState, useEffect } from 'react';
+import TopBar from './TopBar';
+import Sidebar from './Sidebar';
 
-type Props = {
+interface AppShellProps {
   children: React.ReactNode;
-};
+}
 
-export default function AppShell({ children }: Props) {
+export default function AppShell({ children }: AppShellProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detectar si es móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      // En móvil, sidebar cerrado por defecto
+      if (window.innerWidth < 768) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    // Solo cerrar en móvil al hacer click en un link
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  };
+
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#f7f8fa" }}>
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <TopBar />
-
-        <main
-          style={{
-            flex: 1,
-            padding: "24px 32px",
-            overflowY: "auto",
-          }}
-        >
-          {children}
-        </main>
-      </div>
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--brand-bg)' }}>
+      <TopBar onToggleSidebar={toggleSidebar} />
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
+      
+      <main className={`main-content ${!sidebarOpen ? 'sidebar-closed' : ''}`}>
+        {children}
+      </main>
     </div>
   );
 }
