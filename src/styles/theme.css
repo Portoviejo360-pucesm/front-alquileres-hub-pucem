@@ -1,0 +1,134 @@
+/* src/styles/theme.css */
+
+/* ========================================
+   VARIABLES CSS
+   ======================================== */
+
+:root {
+  --brand-green: #2d5a4c;      /* El verde oscuro corporativo */
+  --brand-bg: #f5f1e4;         /* El fondo crema */
+  --brand-red: #e11d48;        /* El rojo del logo */
+  --input-border: #d1e7dd;     /* Borde suave para inputs */
+  --white: #ffffff;
+  --text-dark: #111827;        /* Texto oscuro */
+}
+
+/* ========================================
+   LAYOUT PÚBLICO
+   ======================================== */
+
+.public-container {
+  min-height: 100vh;
+  background-color: var(--brand-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.public-main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* ========================================
+   INPUTS COMPARTIDOS
+   ======================================== */
+
+.auth-input {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 50px;
+  border: 1.5px solid var(--input-border);
+  font-size: 15px;
+  margin-bottom: 20px;
+  outline: none;
+  color: var(--text-dark);
+  background-color: var(--white);
+  transition: all 0.3s ease;
+}
+
+.auth-input:focus {
+  border-color: var(--brand-green);
+  background-color: #fafdfc;
+}
+
+.auth-input::placeholder {
+  color: #9ca3af;
+}
+
+/* ========================================
+   BOTONES COMPARTIDOS
+   ======================================== */
+
+.btn-ingresar {
+  width: 100%;
+  padding: 15px;
+  border-radius: 50px;
+  border: none;
+  background-color: var(--brand-green);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.2s ease, opacity 0.2s;
+  text-transform: uppercase;
+}
+
+.btn-ingresar:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.btn-ingresar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Botones ghost y register (usados en PublicTopBar) */
+.btn-ghost {
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 20px;
+  border-radius: 50px;
+  border: 1px solid #e5e7eb;
+  color: var(--text-dark);
+  background: var(--white);
+  transition: background 0.2s;
+}
+
+.btn-ghost:hover {
+  background: #f9fafb;
+}
+
+.btn-register {
+  background-color: var(--brand-green);
+  color: var(--white);
+  padding: 8px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(45, 90, 76, 0.2);
+  transition: opacity 0.2s;
+}
+
+.btn-register:hover {
+  opacity: 0.9;
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
