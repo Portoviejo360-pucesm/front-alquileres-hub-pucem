@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,7 +12,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo y Nombre */}
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="relative w-12 h-12 bg-gradient-to-br from-brand-dark to-brand-brown rounded-2xl flex items-center justify-center shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 overflow-hidden cursor-pointer">
               <Image
                 src="/icon360.png"
@@ -25,13 +26,13 @@ export default function Navbar() {
 
             <div>
               <h1 className="text-2xl font-black tracking-tight text-gray-900 cursor-pointer hover:text-brand-dark transition-colors duration-300">
-                Ortoviejo360
+                Portoviejo360
               </h1>
               <p className="text-xs font-medium text-gray-600">
                 Encuentra tu hogar ideal
               </p>
             </div>
-          </div>
+          </Link>
 
           {/* Links de navegación - Desktop */}
           <div className="hidden md:flex items-center gap-6">
@@ -60,13 +61,13 @@ export default function Navbar() {
 
           {/* Botones de Acción - Desktop */}
           <div className="hidden md:flex items-center gap-3">
-            <button className="px-5 py-2.5 text-sm font-semibold text-gray-800 border-2 border-gray-300 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+            <Link href="/login" className="px-5 py-2.5 text-sm font-semibold text-gray-800 border-2 border-gray-300 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 hover:scale-105 hover:shadow-lg">
               Ingresar
-            </button>
+            </Link>
 
-            <button className="px-5 py-2.5 text-sm font-semibold text-gray-900 border-2 border-gray-300 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+            <Link href="/register" className="px-5 py-2.5 text-sm font-semibold text-gray-900 border-2 border-gray-300 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 hover:scale-105 hover:shadow-lg">
               Registro
-            </button>
+            </Link>
           </div>
 
           {/* Menú Hamburguesa - Mobile */}
@@ -123,12 +124,12 @@ export default function Navbar() {
             </a>
 
             <div className="pt-3 space-y-2">
-              <button className="w-full px-5 py-2.5 text-sm font-semibold text-gray-800 border-2 border-gray-300 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300">
+              <Link href="/login" className="block w-full px-5 py-2.5 text-sm font-semibold text-gray-800 border-2 border-gray-300 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 text-center">
                 Ingresar
-              </button>
-              <button className="w-full px-5 py-2.5 text-sm font-semibold text-gray-900 border-2 border-gray-300 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300">
+              </Link>
+              <Link href="/register" className="block w-full px-5 py-2.5 text-sm font-semibold text-gray-900 border-2 border-gray-300 rounded-full hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 text-center">
                 Registro
-              </button>
+              </Link>
             </div>
           </div>
         )}
