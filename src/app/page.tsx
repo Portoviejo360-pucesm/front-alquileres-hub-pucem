@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Navbar from '@/components/Navbar';
+import PublicTopBar from '@/components/layout/PublicTopBar';
+import PropertyFilters from '@/components/PropertyFilters';
 import MapWrapper from '@/components/MapWrapper';
 import { usePropiedades } from '@/hooks/usePropiedades';
 import { usePropiedadesSocket } from '@/hooks/usePropiedadesSocket';
@@ -106,69 +107,25 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
+      <PublicTopBar />
 
-      {/* Barra de filtros mejorada */}
-      <div className="w-full bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
-            {/* Búsqueda */}
-            <div className="w-full lg:max-w-md">
-              <div className="relative">
-                <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar propiedades..."
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Filtro de precio */}
-            <div className="flex items-center gap-4 flex-1">
-              <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                Precio máximo:
-              </span>
-              <span className="text-lg font-bold text-red-600">
-                ${Number(maxPrice ?? maxPriceLimit).toFixed(0)}
-              </span>
-
-              <input
-                type="range"
-                min={0}
-                max={maxPriceLimit || 1000}
-                value={Number(maxPrice ?? maxPriceLimit)}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="flex-1 max-w-xs h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
-              />
-
-              <button
-                onClick={clearFilters}
-                className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all whitespace-nowrap"
-              >
-                Limpiar filtros
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PropertyFilters
+        search={search}
+        onSearchChange={setSearch}
+        maxPrice={maxPrice}
+        maxPriceLimit={maxPriceLimit}
+        onPriceChange={setMaxPrice}
+        onClearFilters={clearFilters}
+      />
 
       {/* Contenido principal */}
-      <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      <main className="flex-1 flex flex-col md:flex-row">
         {/* Listado de propiedades */}
         <section
           className={`w-full md:w-[55%] bg-white flex flex-col ${showMapMobile ? 'hidden md:flex' : 'flex'
             }`}
         >
-          <div className="p-6 border-b border-gray-200">
+          <div className="p-6 border-b border-gray-200 bg-white sticky top-[70px] z-10">
             <h2 className="text-xl font-bold text-gray-900">
               {propiedadesFiltradas.length} {propiedadesFiltradas.length === 1 ? 'propiedad disponible' : 'propiedades disponibles'}
             </h2>
@@ -176,7 +133,7 @@ export default function Home() {
           </div>
 
           {/* Grid de propiedades con scroll */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 flex-1 overflow-y-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 overflow-y-auto" style={{ maxHeight: "calc(100vh - 240px)" }}>
             {propiedadesFiltradas.map((prop, idx) => {
               const id = getId(prop, idx);
               const title = getTitle(prop);
@@ -244,8 +201,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* MAPA */}
-        <section className={`${showMapMobile ? 'block' : 'hidden'} md:block flex-1`}>
+        {/* MAPA - Sticky */}
+        <section className={`${showMapMobile ? 'block' : 'hidden'} md:block md:w-[45%] md:sticky md:top-[70px] md:h-[calc(100vh-70px)]`}>
           <MapWrapper properties={propiedadesFiltradas as any} />
         </section>
 
