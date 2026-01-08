@@ -133,7 +133,7 @@ export default function Home() {
           </div>
 
           {/* Grid de propiedades con scroll */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 overflow-y-auto" style={{ maxHeight: "calc(100vh - 240px)" }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 overflow-y-auto auto-rows-max" style={{ maxHeight: "calc(100vh - 240px)" }}>
             {propiedadesFiltradas.map((prop, idx) => {
               const id = getId(prop, idx);
               const title = getTitle(prop);
