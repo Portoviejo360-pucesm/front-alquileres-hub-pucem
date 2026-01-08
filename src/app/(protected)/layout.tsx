@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import AppShell from '@/components/layout/AppShell';
@@ -14,26 +14,27 @@ export default function ProtectedLayout({
 }) {
   const router = useRouter();
   const { isAuthenticated, loading, loadUser } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
 
-  // 🚧 MODO DESARROLLO: Comentar este useEffect para permitir acceso sin login
-  /*
   useEffect(() => {
+    setMounted(true);
     loadUser();
   }, [loadUser]);
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    if (mounted && !loading && !isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, loading, router]);
+  }, [mounted, isAuthenticated, loading, router]);
 
-  if (loading) {
+  // Durante SSR o antes de montar, mostrar loading
+  if (!mounted || loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        minHeight: '100vh' 
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh'
       }}>
         <p>Cargando...</p>
       </div>
@@ -43,7 +44,6 @@ export default function ProtectedLayout({
   if (!isAuthenticated) {
     return null;
   }
-  */
 
   return (
     <AppShell>

@@ -114,3 +114,98 @@
     font-size: 22px;
   }
 }
+
+/* Agregar al final de src/styles/components/auth-pages.css */
+
+/* ========================================
+   VALIDACIÓN DE CONTRASEÑA
+   ======================================== */
+
+.password-validation {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: -12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.password-validation-title {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.password-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.password-requirement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+.password-requirement.valid {
+  color: #059669;
+}
+
+.requirement-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.requirement-icon.unchecked {
+  color: #d1d5db;
+}
+
+.requirement-icon.checked {
+  color: #059669;
+}
+
+/* Input con error de confirmación */
+.auth-input.password-mismatch {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.auth-input.password-mismatch:focus {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+/* Mensaje de error inline */
+.password-error-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: -14px;
+  margin-bottom: 12px;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.password-error-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}

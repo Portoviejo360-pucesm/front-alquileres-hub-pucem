@@ -1,33 +1,45 @@
-"use client";
+'use client';
 
-export default function GlobalError({
+import { useEffect } from 'react';
+
+export default function Error({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  return (
-    <html>
-      <body style={{ padding: 24, fontFamily: "system-ui" }}>
-        <h2>Algo salió mal 😵‍💫</h2>
-        <p style={{ color: "#555" }}>
-          {error?.message || "Ocurrió un error inesperado."}
-        </p>
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
 
-        <button
-          onClick={() => reset()}
-          style={{
-            marginTop: 12,
-            padding: "10px 14px",
-            borderRadius: 10,
-            border: "1px solid #ddd",
-            cursor: "pointer",
-          }}
-        >
-          Reintentar
-        </button>
-      </body>
-    </html>
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      padding: '20px',
+      textAlign: 'center'
+    }}>
+      <h2 style={{ marginBottom: '20px' }}>¡Algo salió mal!</h2>
+      <p style={{ marginBottom: '20px', color: '#666' }}>
+        {error.message || 'Ha ocurrido un error inesperado'}
+      </p>
+      <button
+        onClick={reset}
+        style={{
+          padding: '10px 20px',
+          backgroundColor: '#0070f3',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}
+      >
+        Intentar de nuevo
+      </button>
+    </div>
   );
 }
