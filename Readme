@@ -1,0 +1,179 @@
+
+# 🖥️ Frontend – Panel de Disponibilidad
+
+### Portoviejo 360
+
+Este proyecto corresponde al **frontend del módulo de Disponibilidad y Búsqueda Inteligente** del sistema **Portoviejo 360**.
+Está desarrollado con **Next.js** y consume datos del backend mediante **API REST** y **WebSockets**, permitiendo visualizar propiedades inmobiliarias y recibir **actualizaciones en tiempo real** sin recargar la página.
+
+---
+
+## 🎯 Objetivo del Frontend
+
+* Mostrar un listado de propiedades inmobiliarias.
+* Visualizar el estado de cada propiedad (Disponible, Ocupado, Mantenimiento).
+* Recibir actualizaciones de estado en tiempo real mediante WebSockets.
+* Integrar un **mapa interactivo** para la visualización geográfica.
+* Mantener una UI reactiva, responsive y desacoplada del backend.
+
+---
+
+## 🧱 Tecnologías Utilizadas
+
+* **Next.js (App Router)**
+* **React**
+* **TypeScript**
+* **Socket.IO Client**
+* **Leaflet** (mapas)
+* **Context API** (estado global)
+* **CSS Modules / Global CSS**
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+src/
+├── app/
+│   ├── layout.tsx        # Layout principal
+│   ├── page.tsx          # Vista principal
+│   └── globals.css
+├── components/
+│   ├── Navbar.tsx
+│   ├── Map.tsx
+│   └── MapWrapper.tsx
+├── context/
+│   └── PropiedadesContext.tsx
+├── hooks/
+│   ├── usePropiedades.ts
+│   └── usePropiedadesSocket.ts
+├── services/
+│   ├── api.ts            # Consumo API REST
+│   └── socket.ts         # Configuración Socket.IO
+├── utils/
+│   └── getColorByEstado.ts
+├── types/
+└── public/
+```
+
+---
+
+## 🔌 Comunicación con el Backend
+
+### API REST
+
+El frontend consume endpoints del backend para:
+
+* Obtener propiedades.
+* Consultar filtros.
+* Inicializar el estado de la aplicación.
+
+### WebSocket (Tiempo Real)
+
+El frontend se conecta al backend mediante **Socket.IO** para escuchar cambios de estado de las propiedades.
+
+Evento escuchado:
+
+```ts
+propiedad:estado-cambiado
+```
+
+Ejemplo de payload recibido:
+
+```json
+{
+  "id_propiedad": 1,
+  "estado_id": 3,
+  "estado": "MANTENIMIENTO",
+  "precio_mensual": "400.00",
+  "publico_objetivo": "SOLO ESTUDIANTES",
+  "timestamp": "2025-12-21T04:28:38.983Z"
+}
+```
+
+---
+
+## 🔁 Manejo de Estado
+
+* El estado global de las propiedades se maneja mediante **Context API**.
+* El hook `usePropiedadesSocket`:
+
+  * Escucha eventos WebSocket.
+  * Actualiza el estado global.
+* La UI se re-renderiza automáticamente cuando cambia el estado.
+
+📌 **No se recarga la página**
+📌 **No se muta estado manualmente**
+
+---
+
+## 🗺️ Mapa Interactivo
+
+* Implementado con **Leaflet**.
+* Muestra propiedades geolocalizadas.
+* Preparado para sincronización futura con eventos en tiempo real.
+
+---
+
+## 🧪 Pruebas Realizadas
+
+* Verificación manual del consumo de la API REST.
+* Confirmación de conexión WebSocket en consola.
+* Validación de recepción de eventos en tiempo real.
+* Validación visual del cambio de estado en la UI.
+
+---
+
+## 🚀 Ejecución Local
+
+### Instalación de dependencias
+
+```bash
+npm install
+# o
+yarn install
+```
+
+### Ejecución
+
+```bash
+npm run dev
+# o
+yarn dev
+```
+
+Frontend disponible en:
+
+```
+http://localhost:3001
+```
+
+⚠️ El backend debe estar corriendo para recibir datos y eventos en tiempo real.
+
+---
+
+## ⚠️ Notas Importantes
+
+* Actualmente el frontend puede usar **datos simulados (mocks)** como fallback inicial.
+* La estructura está preparada para consumir datos reales del backend.
+* La autenticación no está implementada en esta fase.
+
+---
+
+## 🧭 Próximos Pasos (no implementados)
+
+* Consumo completo de datos reales desde la API.
+* Actualización visual del mapa en tiempo real.
+* Persistencia de favoritos por usuario.
+* Autenticación y control de roles.
+
+---
+
+## 👨‍💻 Autor
+
+Proyecto académico – **Portoviejo 360**
+Frontend: **Panel de Disponibilidad y Búsqueda Inteligente**
+
+---
+
+### ✅ VEREDICTO FINAL
