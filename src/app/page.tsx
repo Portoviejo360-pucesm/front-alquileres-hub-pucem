@@ -71,10 +71,12 @@ export default function Home() {
   }, [propiedades]);
 
   useEffect(() => {
-    // Inicializa el slider sin romper el layout
-    if (maxPrice === null) setMaxPrice(maxPriceLimit);
-    else if (maxPrice > maxPriceLimit) setMaxPrice(maxPriceLimit);
+  // ✅ Solo corrige si existe filtro y se pasa del límite
+  if (maxPrice !== null && maxPrice > maxPriceLimit) {
+    setMaxPrice(maxPriceLimit);
+    }
   }, [maxPrice, maxPriceLimit]);
+
 
   const propiedadesFiltradas = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -86,7 +88,7 @@ export default function Home() {
       const matchText = q === '' || text.includes(q);
 
       const n = parsePrice(p.price ?? p.precio ?? p.precio_mensual ?? p.precioMensual ?? p.precioMes ?? p.valor);
-      const matchPrice = n == null || n <= max;
+      const matchPrice = maxPrice == null || n == null || n <= maxPrice;
 
       return matchText && matchPrice;
     });
@@ -102,7 +104,7 @@ export default function Home() {
 
   const clearFilters = () => {
     setSearch('');
-    setMaxPrice(maxPriceLimit);
+    setMaxPrice(null);
   };
 
   return (
