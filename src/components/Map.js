@@ -2,27 +2,54 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
+import { useEffect, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 
 const DEFAULT_CENTER = [-0.9536, -80.7371]; // Portoviejo
 const DEFAULT_ZOOM = 13;
 
 const Map = ({ properties = [] }) => {
+  // 📍 Estado de ubicación del usuario
+  const [userLocation, setUserLocation] = useState(null);
+
+  // 🔐 Pedir permiso de ubicación al cargar
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      (err) => {
+        console.warn('Permiso de ubicación denegado', err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+      }
+    );
+  }, []);
+
   // 🔒 Filtrar SOLO propiedades con coordenadas válidas
-  const validProperties = properties.filter(p =>
-    p.lat !== undefined &&
-    p.lng !== undefined &&
-    !isNaN(Number(p.lat)) &&
-    !isNaN(Number(p.lng))
+  const validProperties = properties.filter(
+    (p) =>
+      p.lat !== undefined &&
+      p.lng !== undefined &&
+      !isNaN(Number(p.lat)) &&
+      !isNaN(Number(p.lng))
   );
 
   // 🎯 Centro del mapa
-  const center =
-    validProperties.length > 0
-      ? [Number(validProperties[0].lat), Number(validProperties[0].lng)]
-      : DEFAULT_CENTER;
+  const center = userLocation
+    ? [userLocation.lat, userLocation.lng]
+    : validProperties.length > 0
+    ? [Number(validProperties[0].lat), Number(validProperties[0].lng)]
+    : DEFAULT_CENTER;
 
-  // 🎨 Icono personalizado
+  // 🎨 Icono personalizado de propiedades
   const createCustomIcon = (price) =>
     L.divIcon({
       className: 'custom-marker-container',
@@ -32,9 +59,6 @@ const Map = ({ properties = [] }) => {
             background-color: #2E5E4E !important;
             color: #FBFBF8 !important;
             transform: scale(1.1);
-          }
-          .marker-pin:hover .marker-arrow {
-            border-top-color: #2E5E4E !important;
           }
         </style>
         <div class="marker-pin flex flex-col items-center cursor-pointer">
@@ -49,6 +73,23 @@ const Map = ({ properties = [] }) => {
       popupAnchor: [0, -40],
     });
 
+  // 📍 Icono del usuario
+  const userIcon = L.divIcon({
+    className: 'user-marker',
+    html: `
+      <div style="
+        width:14px;
+        height:14px;
+        background:#2563eb;
+        border:3px solid white;
+        border-radius:50%;
+        box-shadow:0 0 10px rgba(37,99,235,0.8);
+      "></div>
+    `,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+  });
+
   return (
     <MapContainer
       center={center}
@@ -57,13 +98,24 @@ const Map = ({ properties = [] }) => {
       className="h-full w-full outline-none"
     >
       <TileLayer
-        attribution='&copy; OpenStreetMap contributors'
+        attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
       />
 
+      {/* 📍 Ubicación del usuario */}
+      {userLocation && (
+        <Marker
+          position={[userLocation.lat, userLocation.lng]}
+          icon={userIcon}
+        >
+          <Popup>Tu ubicación actual</Popup>
+        </Marker>
+      )}
+
+      {/* 🏠 Propiedades */}
       {validProperties.map((property) => (
         <Marker
-          key={property.id} // 🔑 ID real
+          key={property.id}
           position={[Number(property.lat), Number(property.lng)]}
           icon={createCustomIcon(property.price)}
         >
