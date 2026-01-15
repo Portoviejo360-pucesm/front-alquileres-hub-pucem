@@ -1,0 +1,563 @@
+/* src/styles/components/alquileres.css */
+
+/* ========================================
+   VISTA 1: DETALLE DE PROPIEDAD / RESERVA
+   ======================================== */
+
+.property-detail-container {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.property-detail-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+/* --- GALERÍA DE IMÁGENES --- */
+.gallery-container {
+  width: 100%;
+}
+
+.gallery-hero {
+  width: 100%;
+  height: 450px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.gallery-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-thumbnails {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+}
+
+.gallery-thumbnail {
+  width: 100%;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: none;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.gallery-thumbnail:hover {
+  border-color: var(--brand-green);
+  transform: scale(1.05);
+}
+
+.gallery-thumbnail.active {
+  border-color: var(--brand-green);
+}
+
+.gallery-thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- PANEL DE INFORMACIÓN --- */
+.property-info-panel {
+  background: var(--white);
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.property-header {
+  margin-bottom: 24px;
+}
+
+.property-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.property-location {
+  font-size: 15px;
+  color: #6b7280;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.property-price {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--brand-green);
+  margin-bottom: 8px;
+}
+
+.property-price-period {
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.property-section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.property-section:last-child {
+  border-bottom: none;
+}
+
+.property-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+}
+
+/* --- AMENITIES --- */
+.amenities-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.amenity-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+.amenity-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--brand-green);
+}
+
+/* --- FORMULARIO DE RESERVA --- */
+.booking-section {
+  margin-top: 24px;
+}
+
+.booking-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.booking-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ========================================
+   VISTA 2: HISTORIAL DE RESERVAS
+   ======================================== */
+
+.alquileres-container {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.alquileres-header {
+  margin-bottom: 32px;
+}
+
+.alquileres-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.alquileres-subtitle {
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.reservas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* --- TARJETA DE RESERVA --- */
+.reserva-card {
+  display: flex;
+  gap: 16px;
+  background: var(--white);
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+  transition: all 0.2s;
+}
+
+.reserva-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.reserva-thumbnail {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f3f4f6;
+  flex-shrink: 0;
+}
+
+.reserva-thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reserva-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.reserva-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.reserva-dates {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.reserva-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reserva-actions {
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  border-left: 1px solid #f3f4f6;
+}
+
+/* ========================================
+   VISTA 3: VISUALIZADOR DE CONTRATO
+   ======================================== */
+
+.contrato-container {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.contrato-header {
+  margin-bottom: 32px;
+}
+
+.contrato-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.contrato-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 24px;
+}
+
+/* --- PANEL DE INFORMACIÓN --- */
+.contrato-info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-card {
+  background: var(--white);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.info-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brand-green);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.info-row {
+  margin-bottom: 10px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+/* --- VISOR DE DOCUMENTO --- */
+.document-viewer {
+  background: var(--white);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.document-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.document-content {
+  flex: 1;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 32px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-dark);
+}
+
+.document-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 8px;
+}
+
+/* ========================================
+   VISTA 4: MIS PROPIEDADES
+   ======================================== */
+
+.mis-propiedades-container {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.property-management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.property-management-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.property-management-card {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: 20px;
+  align-items: center;
+  background: var(--white);
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+  transition: all 0.2s;
+}
+
+.property-management-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.property-management-image {
+  width: 120px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  background-color: #f3f4f6;
+}
+
+.property-management-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.property-management-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.property-management-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--brand-green);
+}
+
+.property-management-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ========================================
+   ESTADOS COMUNES Y UTILIDADES
+   ======================================== */
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--white);
+  border-radius: 16px;
+  border: 2px dashed #e5e7eb;
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  color: #d1d5db;
+}
+
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.empty-state-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .property-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contrato-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .property-management-card {
+    grid-template-columns: 100px 1fr;
+    gap: 16px;
+  }
+
+  .property-management-actions {
+    grid-column: 2;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .property-detail-container,
+  .alquileres-container,
+  .contrato-container,
+  .mis-propiedades-container {
+    padding: 20px;
+  }
+
+  .gallery-hero {
+    height: 300px;
+  }
+
+  .property-info-panel {
+    padding: 24px;
+  }
+
+  .property-title {
+    font-size: 22px;
+  }
+
+  .property-price {
+    font-size: 26px;
+  }
+
+  .amenities-list {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-dates {
+    grid-template-columns: 1fr;
+  }
+
+  .reserva-card {
+    flex-direction: column;
+  }
+
+  .reserva-thumbnail {
+    width: 100%;
+    height: 200px;
+  }
+
+  .reserva-actions {
+    border-left: none;
+    border-top: 1px solid #f3f4f6;
+    padding-left: 0;
+    padding-top: 16px;
+    width: 100%;
+  }
+
+  .property-management-card {
+    grid-template-columns: 1fr;
+  }
+
+  .property-management-image {
+    width: 100%;
+    height: 180px;
+  }
+}
