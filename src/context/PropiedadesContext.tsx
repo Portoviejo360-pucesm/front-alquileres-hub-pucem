@@ -1,12 +1,7 @@
 'use client';
 
 import { createContext, useState, useMemo } from 'react';
-
-export type Propiedad = {
-  id: number;
-  estado: string;
-  [key: string]: any;
-};
+import type { Propiedad } from '@/types/propiedad';
 
 type ContextType = {
   propiedades: Propiedad[];

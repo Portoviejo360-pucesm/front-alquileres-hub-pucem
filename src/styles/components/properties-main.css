@@ -1,0 +1,425 @@
+/* Estilos para la página principal de propiedades */
+
+.properties-main-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.properties-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 70px);
+}
+
+@media (min-width: 768px) {
+  .properties-layout {
+    flex-direction: row;
+  }
+}
+
+/* Header de propiedades */
+.properties-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid #f3f4f6;
+  background-color: white;
+  position: sticky;
+  top: 70px;
+  z-index: 10;
+}
+
+.properties-header-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.properties-header-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Grid de propiedades */
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 32px;
+  background-color: #f9fafb;
+  overflow-y: auto;
+  max-height: calc(100vh - 240px);
+}
+
+/* Card de propiedad */
+.property-card {
+  position: relative;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  background-color: white;
+  border: 1px solid #f3f4f6;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.property-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge de estado */
+.property-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Botón de favorito */
+.favorite-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Imagen de propiedad */
+.property-image-container {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+
+.property-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.property-card:hover .property-image {
+  transform: scale(1.05);
+}
+
+/* Contenido de la card */
+.property-content {
+  padding: 20px;
+}
+
+.property-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #111827;
+  margin-bottom: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.property-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.property-location span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Footer de la card */
+.property-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.property-price-container {
+  display: flex;
+  align-items: baseline;
+}
+
+.property-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.property-price-period {
+  font-size: 13px;
+  color: #6b7280;
+  margin-left: 4px;
+}
+
+.btn-ver-detalles {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #dc2626;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-ver-detalles:hover {
+  background-color: #b91c1c;
+  color: white;
+}
+
+/* Sección del mapa */
+.map-section {
+  display: none;
+  position: sticky;
+  top: 70px;
+  height: calc(100vh - 70px);
+  border-left: 1px solid #f3f4f6;
+}
+
+@media (min-width: 768px) {
+  .map-section {
+    display: block;
+    width: 45%;
+  }
+
+  .properties-grid-section {
+    width: 55%;
+  }
+}
+
+.map-section.mobile-visible {
+  display: block;
+}
+
+/* Botón toggle móvil */
+.mobile-toggle-btn {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 28px;
+  background-color: #111827;
+  color: white;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  z-index: 50;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+}
+
+.mobile-toggle-btn:hover {
+  background-color: #1f2937;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+@media (max-width: 767px) {
+  .mobile-toggle-btn {
+    display: block;
+  }
+
+  .properties-grid-section.mobile-hidden {
+    display: none;
+  }
+}
+
+/* Estados de propiedades (colores de badges) */
+.bg-green-100 {
+  background-color: #d1fae5;
+  color: #10b981;
+}
+
+.bg-red-100 {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.bg-yellow-100 {
+  background-color: #fef3c7;
+  color: #f59e0b;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Popup del mapa estilo Airbnb */
+.property-map-popup {
+  min-width: 280px;
+  max-width: 320px;
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+}
+
+.popup-image-container {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+
+.popup-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.popup-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.popup-content {
+  padding: 12px;
+}
+
+.popup-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popup-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.popup-location span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popup-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.popup-price-container {
+  display: flex;
+  align-items: baseline;
+}
+
+.popup-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.popup-price-period {
+  font-size: 12px;
+  color: #6b7280;
+  margin-left: 3px;
+}
+
+.popup-btn {
+  padding: 6px 14px;
+  background-color: #111827;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.popup-btn:hover {
+  background-color: #1f2937;
+}
+
+/* Contador de propiedades visible en el mapa */
+.map-property-counter {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-property-counter svg {
+  color: #dc2626;
+}
+
+/* Override estilos de Leaflet popup */
+.leaflet-popup-content-wrapper {
+  padding: 0 !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.leaflet-popup-tip {
+  background-color: white !important;
+}

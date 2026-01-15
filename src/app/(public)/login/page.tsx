@@ -31,7 +31,7 @@ export default function LoginPage() {
 
     try {
       await login(formData.correo, formData.password);
-      router.push('/dashboard');
+      router.push('/');
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión');
     } finally {
