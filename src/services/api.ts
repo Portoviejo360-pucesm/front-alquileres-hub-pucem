@@ -1,7 +1,8 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_PREFIX = '/api';
 
 export async function getPropiedades() {
-  const res = await fetch(`${API_URL}/propiedades`, {
+  const res = await fetch(`${API_URL}${API_PREFIX}/propiedades`, {
     cache: 'no-store',
   });
 
@@ -13,7 +14,7 @@ export async function getPropiedades() {
 }
 
 export const getServiciosPorPropiedad = async (id: number) => {
-  const res = await fetch(`${API_URL}/propiedades/${id}/servicios`, {
+  const res = await fetch(`${API_URL}${API_PREFIX}/propiedades/${id}/servicios`, {
     cache: "no-store",
   });
 
