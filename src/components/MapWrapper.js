@@ -12,16 +12,22 @@ const DynamicMap = dynamic(() => import('./Map'), {
   ),
 });
 
-const MapWrapper = ({ properties }) => {
-  return <DynamicMap properties={properties} />;
+const MapWrapper = ({ properties, onBoundsChange, zoom, showPopup = true }) => {
+  return <DynamicMap properties={properties} onBoundsChange={onBoundsChange} zoom={zoom} showPopup={showPopup} />;
 };
 
 MapWrapper.propTypes = {
   properties: PropTypes.arrayOf(PropTypes.object),
+  onBoundsChange: PropTypes.func,
+  zoom: PropTypes.number,
+  showPopup: PropTypes.bool,
 };
 
 MapWrapper.defaultProps = {
   properties: [],
+  onBoundsChange: null,
+  zoom: 13,
+  showPopup: true,
 };
 
 export default MapWrapper;

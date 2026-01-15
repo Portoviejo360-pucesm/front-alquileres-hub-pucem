@@ -1,38 +1,66 @@
 'use client';
 
-import PriceSlider from '@/components/ui/PriceSlider';
+import { useMemo, useState } from 'react';
+import PriceSlider, { PriceRange } from '@/components/ui/PriceSlider';
+import AmenitiesDrawer, { AmenityKey } from '@/components/ui/AmenitiesDrawer';
 
 interface PropertyFiltersProps {
   search: string;
   onSearchChange: (value: string) => void;
 
-  maxPrice: number | null;
+  // Precio rango (null => sin filtro)
+  priceRange: PriceRange | null;
   maxPriceLimit: number;
+  onPriceRangeChange: (value: PriceRange | null) => void;
 
-  onPriceChange: (value: number | null) => void; // ✅
+  // Servicios
+  amenities: AmenityKey[];
+  onAmenitiesChange: (value: AmenityKey[]) => void;
+
   onClearFilters: () => void;
 }
 
 export default function PropertyFilters({
   search,
   onSearchChange,
-  maxPrice,
+  priceRange,
   maxPriceLimit,
-  onPriceChange,
+  onPriceRangeChange,
+  amenities,
+  onAmenitiesChange,
   onClearFilters,
 }: PropertyFiltersProps) {
-  const priceRanges = [
-    { label: '$0-200', value: 200 },
-    { label: '$200-400', value: 400 },
-    { label: '$400-600', value: 600 },
-    { label: '$600-800', value: 800 },
-    { label: '$800+', value: maxPriceLimit },
-  ];
+  const [openAmenities, setOpenAmenities] = useState(false);
 
-  const isPriceActive = maxPrice !== null;
+  const defaultRange = useMemo<PriceRange>(
+    () => ({ min: 0, max: maxPriceLimit }),
+    [maxPriceLimit]
+  );
 
-  // ✅ visualmente: si NO hay filtro, que se vea en 0
-  const sliderValue = maxPrice ?? 0;
+  const isPriceActive = priceRange !== null;
+  const sliderRange = priceRange ?? defaultRange;
+
+  const quickRanges = useMemo(
+    () => [
+      { label: '$0-200', min: 0, max: 200 },
+      { label: '$200-400', min: 200, max: 400 },
+      { label: '$400-600', min: 400, max: 600 },
+      { label: '$600-800', min: 600, max: 800 },
+      { label: '$800+', min: 800, max: maxPriceLimit }, // open ended en page.tsx
+    ],
+    [maxPriceLimit]
+  );
+
+  const sameRange = (a: PriceRange | null, b: PriceRange) => {
+    if (!a) return false;
+    return a.min === b.min && a.max === b.max;
+  };
+
+  const setRange = (r: PriceRange) => {
+    // Si vuelve al rango completo => sin filtro
+    if (r.min <= 0 && r.max >= maxPriceLimit) onPriceRangeChange(null);
+    else onPriceRangeChange(r);
+  };
 
   return (
     <div className="w-full bg-white border-b border-gray-200 shadow-sm" style={{ marginTop: '70px' }}>
@@ -70,44 +98,62 @@ export default function PropertyFilters({
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold text-gray-700">Rango de precio</span>
 
-              <button
-                onClick={onClearFilters}
-                className="text-sm font-semibold text-red-600 hover:text-red-700 transition-colors"
-              >
-                Limpiar filtros
-              </button>
+              <div className="flex items-center gap-3">
+                {/* ✅ Servicios (texto rojo) */}
+                <button
+                  onClick={() => setOpenAmenities(true)}
+                  className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-semibold text-red-600 hover:border-red-300 hover:bg-red-50 transition-colors"
+                >
+                  Servicios{amenities.length ? ` (${amenities.length})` : ''}
+                </button>
+
+                <button
+                  onClick={onClearFilters}
+                  className="text-sm font-semibold text-red-600 hover:text-red-700 transition-colors"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
             </div>
 
             {/* Botones rápidos */}
             <div className="flex flex-wrap gap-2">
-              {priceRanges.map((range) => (
+              {quickRanges.map((r) => (
                 <button
-                  key={range.label}
-                  onClick={() => onPriceChange(range.value)}
+                  key={r.label}
+                  onClick={() => onPriceRangeChange({ min: r.min, max: r.max })}
                   className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
-                    isPriceActive && maxPrice === range.value
+                    sameRange(priceRange, { min: r.min, max: r.max })
                       ? 'bg-red-600 text-white shadow-md'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {range.label}
+                  {r.label}
                 </button>
               ))}
             </div>
 
-            {/* ✅ Slider desde 0, pero “sin filtro” cuando está en 0 */}
+            {/* Slider tipo Amazon (min/max) */}
             <div className="pt-2">
               <PriceSlider
                 min={0}
                 max={maxPriceLimit}
-                value={sliderValue}
+                value={sliderRange}
                 active={isPriceActive}
-                onChange={(v) => onPriceChange(v === 0 ? null : v)} // ✅ 0 => sin filtro
+                onChange={(next) => setRange(next)}
               />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Drawer Servicios */}
+      <AmenitiesDrawer
+        open={openAmenities}
+        value={amenities}
+        onChange={onAmenitiesChange}
+        onClose={() => setOpenAmenities(false)}
+      />
     </div>
   );
 }

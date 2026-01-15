@@ -12,6 +12,8 @@ import "@/styles/components/propiedades.css";
 import "@/styles/components/arrendadores.css";
 import "@/styles/components/documentacion.css";
 import "@/styles/components/auth-pages.css";
+import "@/styles/components/properties-main.css";
+import "@/styles/components/property-details.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -1,7 +1,7 @@
 import { tokenStorage } from "@/lib/auth/token";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const API_PREFIX = process.env.NEXT_PUBLIC_API_PREFIX ?? "/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_PREFIX = process.env.NEXT_PUBLIC_API_PREFIX || "/api"; 
 
 if (!API_URL) console.warn("Falta NEXT_PUBLIC_API_URL en .env.local");
 
