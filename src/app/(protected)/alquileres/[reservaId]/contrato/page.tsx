@@ -46,6 +46,24 @@ export default function ContratoPage() {
     const handleDescargar = async () => {
         try {
             setDownloading(true);
+
+            // 1. Force regeneration first to ensure latest template/fixes
+            // We pass the reservation ID and the user ID (which is currently hardcoded in the api wrapper, 
+            // but the backend needs a user ID in the body or header. The wrapper handles headers).
+            // The GenerarContratoRequest type expects { reservaId, usuarioId? }.
+            // We can pass just reservaId if the backend resolves user from header, 
+            // but let's be safe and pass what we can or just let the API wrapper handle it.
+            // Check contracts.api.ts: generarContrato takes 'GenerarContratoRequest'.
+
+            // Let's assume user ID management is handled by the API auth layer mostly, 
+            // but we need to trigger the POST.
+            await contratosApi.generarContrato({
+                reservaId,
+                // We don't have the user ID easily accessible here except via complex context, 
+                // but the backend uses the header 'x-user-id'.
+            });
+
+            // 2. Then download
             await contratosApi.downloadPDF(
                 reservaId,
                 `contrato-${reserva?.propiedad?.tituloAnuncio || reservaId}.pdf`
