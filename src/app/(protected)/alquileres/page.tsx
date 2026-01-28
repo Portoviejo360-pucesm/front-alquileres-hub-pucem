@@ -21,7 +21,13 @@ export default function AlquileresPage() {
                 const data = await reservasApi.misReservas();
                 setReservas(data);
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Error al cargar reservas');
+                // Si es error de conexión, mostrar mensaje más amigable
+                const errorMessage = err instanceof Error ? err.message : 'Error al cargar reservas';
+                if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+                    setError('No se pudo conectar al servidor. Verifica que el backend esté activo.');
+                } else {
+                    setError(errorMessage);
+                }
                 console.error('Error al cargar reservas:', err);
             } finally {
                 setLoading(false);
