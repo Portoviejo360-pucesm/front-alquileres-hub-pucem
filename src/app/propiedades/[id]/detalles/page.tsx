@@ -8,8 +8,8 @@ import AppShell from '@/components/layout/AppShell';
 import { useAuthStore } from '@/store/auth.store';
 import { Propiedad } from '@/types/propiedad';
 // 🚨 TEMPORAL: Comentar API y usar datos mock
-// import { propiedadesApi } from '@/lib/api/propiedades.api';
-import { MOCK_PROPIEDADES } from '@/lib/mockData';
+import { propiedadesApi } from '@/lib/api/propiedades.api';
+// import { MOCK_PROPIEDADES } from '@/lib/mockData';
 // 🚨 FIN TEMPORAL
 import MapWrapper from '@/components/MapWrapper';
 import EstadoBadge from '@/components/propiedades/EstadoBadge';
@@ -42,8 +42,8 @@ export default function PropiedadDetallesPage() {
         setError(null);
         
         // 🚨 TEMPORAL: Buscar en datos mock en lugar de API
-        // const data = await propiedadesApi.obtenerPorId(params.id as string);
-        const data = MOCK_PROPIEDADES.find(p => p.id === params.id);
+        const data = await propiedadesApi.obtenerPorId(params.id as string);
+        // const data = MOCK_PROPIEDADES.find(p => p.id === params.id);
         if (!data) {
           throw new Error('Propiedad no encontrada');
         }
