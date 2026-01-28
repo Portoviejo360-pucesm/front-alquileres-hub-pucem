@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react';
 import PriceSlider, { PriceRange } from '@/components/ui/PriceSlider';
 import AmenitiesDrawer, { AmenityKey } from '@/components/ui/AmenitiesDrawer';
+import '@/styles/components/layout.css';
+import '@/styles/components/layout.css';
 
 interface PropertyFiltersProps {
   search: string;
@@ -63,7 +65,7 @@ export default function PropertyFilters({
   };
 
   return (
-    <div className="w-full bg-white border-b border-gray-200 shadow-sm" style={{ marginTop: '70px' }}>
+    <div className="w-full bg-white border-b border-gray-200 shadow-sm filters-offset">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex flex-col gap-4">
 

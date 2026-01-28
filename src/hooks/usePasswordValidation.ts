@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface PasswordValidation {
   minLength: boolean;
@@ -40,9 +40,10 @@ export function usePasswordValidation(password: string): PasswordValidationResul
                      newValidation.hasNumber;
     
     if (allValid && showValidation) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setShowValidation(false);
       }, 500);
+      return () => clearTimeout(timer);
     }
   }, [password, showValidation]);
 
