@@ -1,20 +1,15 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PublicTopBar from '@/components/layout/PublicTopBar';
 import AppShell from '@/components/layout/AppShell';
 import PropertyFilters from '@/components/PropertyFilters';
 import PropertyCard from '@/components/propiedades/PropertyCard';
 import MapWrapper from '@/components/MapWrapper';
-// 🚨 TEMPORAL: Comentar estas líneas cuando el backend esté listo
 import { usePropiedades } from '@/hooks/usePropiedades';
 import { usePropiedadesSocket } from '@/hooks/usePropiedadesSocket';
-import { MOCK_PROPIEDADES } from '@/lib/mockData';
-// 🚨 FIN TEMPORAL
 import { useAuthStore } from '@/store/auth.store';
-import type { AmenityKey } from '@/components/ui/AmenitiesDrawer';
-import type { PriceRange } from '@/components/ui/PriceSlider';
-import type { Propiedad } from '@/types/propiedad';
 import {
   parsePrice,
   getPropertyId,
@@ -24,28 +19,34 @@ import {
   getPropertyStatus,
   getPropertyPriceLabel,
   getPropertyAmenities,
-  normalizeAmenityKey
+  normalizeAmenityKey,
 } from '@/lib/utils/propertyHelpers';
+import type { AmenityKey } from '@/components/ui/AmenitiesDrawer';
+import type { PriceRange } from '@/components/ui/PriceSlider';
+import type { Propiedad } from '@/types/propiedad';
 
 const MAX_PRICE_LIMIT = 5000;
 
+interface MapBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
 export default function Home() {
-  // 🚨 TEMPORAL: Usar datos mock en lugar del hook
+  const router = useRouter();
   const { propiedades } = usePropiedades();
-  // 🚨 FIN TEMPORAL
-  
-  // 🚨 TEMPORAL: Comentar socket mientras se prueban datos estáticos
-  usePropiedadesSocket();
-  // 🚨 FIN TEMPORAL
-  
   const { isAuthenticated, loadUser } = useAuthStore();
 
-  const [favorites, setFavorites] = useState<Set<string | number>>(new Set());
+  usePropiedadesSocket();
+
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [showMapMobile, setShowMapMobile] = useState(false);
   const [search, setSearch] = useState('');
   const [priceRange, setPriceRange] = useState<PriceRange | null>(null);
   const [amenities, setAmenities] = useState<AmenityKey[]>([]);
-  const [mapBounds, setMapBounds] = useState<any>(null);
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
 
   useEffect(() => {
     loadUser();
@@ -56,15 +57,14 @@ export default function Home() {
     const selectedAmenities = amenities.map(normalizeAmenityKey);
 
     let filtered = (propiedades as Propiedad[]).filter((propiedad) => {
-      // Filtro de texto
+      // Filtro de búsqueda por texto
       const title = getPropertyTitle(propiedad);
       const location = getPropertyLocation(propiedad);
       const matchText = !searchQuery || 
         `${title} ${location}`.toLowerCase().includes(searchQuery);
 
       // Filtro de precio
-      const rawPrice = propiedad.price ?? propiedad.precio ?? propiedad.precio_mensual ?? 
-        propiedad.precioMensual ?? propiedad.precioMes ?? propiedad.valor;
+      const rawPrice = propiedad.precio ?? propiedad.precioMensual ?? propiedad.price;
       const numericPrice = parsePrice(rawPrice);
       
       let matchPrice = true;
@@ -79,13 +79,13 @@ export default function Home() {
 
       // Filtro de amenidades
       const propAmenities = getPropertyAmenities(propiedad);
-      const matchAmenities = selectedAmenities.length === 0 ||
-        selectedAmenities.every((amenity) => propAmenities.includes(amenity));
+      const matchAmenities = selectedAmenities.length === 0 || 
+        selectedAmenities.every(amenity => propAmenities.includes(amenity));
 
       return matchText && matchPrice && matchAmenities;
     });
 
-    // Filtro por bounds del mapa (estilo Airbnb)
+    // Filtro por bounds del mapa
     if (mapBounds) {
       filtered = filtered.filter((propiedad) => {
         const lat = Number(propiedad.lat);
@@ -105,14 +105,14 @@ export default function Home() {
     return filtered;
   }, [propiedades, search, priceRange, amenities, mapBounds]);
 
-  const handleMapBoundsChange = (newBounds: any) => {
-    setMapBounds(newBounds);
-  };
-
-  const handleToggleFavorite = (id: string | number) => {
+  const handleToggleFavorite = (id: string) => {
     setFavorites((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
   };
@@ -123,9 +123,8 @@ export default function Home() {
     setAmenities([]);
   };
 
-  const handleViewDetails = (id: string | number) => {
-    // TODO: Navegar a página de detalles
-    console.log('Ver detalles de propiedad:', id);
+  const handleViewDetails = (id: string) => {
+    router.push(`/propiedades/${id}/detalles`);
   };
 
   const pageContent = (
@@ -151,35 +150,51 @@ export default function Home() {
                 {propiedadesFiltradas.length === 1 ? 'propiedad disponible' : 'propiedades disponibles'}
                 {mapBounds && ' en esta área'}
               </h2>
-              <p className="properties-header-subtitle">Portoviejo, Manabí</p>
+              <p className="properties-header-subtitle">
+                Mostrando {propiedadesFiltradas.length} de {propiedades.length} • Portoviejo, Manabí
+              </p>
             </div>
 
-            <div className="properties-grid">
-              {propiedadesFiltradas.map((propiedad, index) => {
-                const id = getPropertyId(propiedad, index);
-                return (
-                  <PropertyCard
-                    key={String(id)}
-                    id={id}
-                    title={getPropertyTitle(propiedad)}
-                    location={getPropertyLocation(propiedad)}
-                    image={getPropertyImage(propiedad)}
-                    estado={getPropertyStatus(propiedad)}
-                    price={getPropertyPriceLabel(propiedad)}
-                    isFavorite={favorites.has(id)}
-                    onToggleFavorite={handleToggleFavorite}
-                    onViewDetails={handleViewDetails}
-                  />
-                );
-              })}
-            </div>
+            {propiedadesFiltradas.length > 0 ? (
+              <div className="properties-grid">
+                {propiedadesFiltradas.map((propiedad, index) => {
+                  const id = getPropertyId(propiedad, index);
+                  return (
+                    <PropertyCard
+                      key={id}
+                      id={id}
+                      title={getPropertyTitle(propiedad)}
+                      location={getPropertyLocation(propiedad)}
+                      image={getPropertyImage(propiedad)}
+                      estado={getPropertyStatus(propiedad)}
+                      price={getPropertyPriceLabel(propiedad)}
+                      isFavorite={favorites.has(id)}
+                      onToggleFavorite={handleToggleFavorite}
+                      onViewDetails={handleViewDetails}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="dashboard-card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+                <p style={{ color: '#6b7280', fontSize: '1.1rem', marginBottom: '1.5rem' }}>
+                  No se encontraron propiedades que coincidan con tus criterios de búsqueda.
+                </p>
+                <button 
+                  onClick={handleClearFilters} 
+                  className="quick-action-btn"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
+            )}
           </section>
 
           {/* Mapa */}
           <section className={`map-section ${showMapMobile ? 'mobile-visible' : ''}`}>
-            <MapWrapper 
-              properties={propiedadesFiltradas as Propiedad[]} 
-              onBoundsChange={handleMapBoundsChange}
+            <MapWrapper
+              properties={propiedadesFiltradas as Propiedad[]}
+              onBoundsChange={setMapBounds}
             />
           </section>
 
@@ -196,7 +211,6 @@ export default function Home() {
     </>
   );
 
-  // Si está autenticado, usar AppShell (TopBar con Sidebar)
   if (isAuthenticated) {
     return (
       <AppShell>
@@ -207,7 +221,6 @@ export default function Home() {
     );
   }
 
-  // Si no está autenticado, usar PublicTopBar
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--brand-bg)' }}>
       <PublicTopBar />

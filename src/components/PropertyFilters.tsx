@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import PriceSlider, { PriceRange } from '@/components/ui/PriceSlider';
 import AmenitiesDrawer, { AmenityKey } from '@/components/ui/AmenitiesDrawer';
 import '@/styles/components/layout.css';
-import '@/styles/components/layout.css';
 
 interface PropertyFiltersProps {
   search: string;
