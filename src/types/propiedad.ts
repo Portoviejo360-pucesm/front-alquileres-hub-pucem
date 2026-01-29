@@ -68,8 +68,9 @@ export type Propiedad = {
   lat?: number;
   lng?: number;
 
-  // Permitir campos adicionales
-  [key: string]: any;
+  // Campos adicionales normalizados
+  priceLabel?: string;
+  mainImage?: string;
 };
 
 export type PropiedadCreate = {
