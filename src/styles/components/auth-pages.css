@@ -209,3 +209,50 @@
   height: 16px;
   flex-shrink: 0;
 }
+
+/* ========================================
+   FORM INPUT CONTAINERS
+   ======================================== */
+
+/* Contenedor para inputs con elementos adicionales (ej: botones de toggle) */
+.input-wrapper {
+  position: relative;
+}
+
+/* Input con padding para el botón de toggle */
+.input-with-toggle {
+  padding-right: 45px;
+}
+
+/* ========================================
+   PASSWORD TOGGLE BUTTON
+   ======================================== */
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 35%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.password-toggle-btn:enabled {
+  cursor: pointer;
+  color: #6b7280;
+  opacity: 1;
+}
+
+.password-toggle-btn:disabled {
+  cursor: not-allowed;
+  color: #d1d5db;
+  opacity: 0.5;
+}
+
+.password-toggle-btn:enabled:hover {
+  color: #374151;
+}

@@ -1,9 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/auth.store';
+import PasswordInput from '@/components/forms/PasswordInput';
+import EmailInput from '@/components/forms/EmailInput';
+import { useEmailValidation } from '@/hooks/useEmailValidation';
+import { usePasswordValidation } from '@/hooks/usePasswordValidation';
+import { usePasswordMatch } from '@/hooks/usePasswordMatch';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,49 +22,11 @@ export default function RegisterPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [passwordValidation, setPasswordValidation] = useState({
-    minLength: false,
-    hasUpperCase: false,
-    hasLowerCase: false,
-    hasNumber: false
-  });
-  const [showPasswordValidation, setShowPasswordValidation] = useState(false);
-  const [passwordMismatch, setPasswordMismatch] = useState(false);
 
-  // Validar contraseña en tiempo real
-  useEffect(() => {
-    const password = formData.password;
-    const validation = {
-      minLength: password.length >= 8,
-      hasUpperCase: /[A-Z]/.test(password),
-      hasLowerCase: /[a-z]/.test(password),
-      hasNumber: /[0-9]/.test(password)
-    };
-    
-    setPasswordValidation(validation);
-
-    // Cerrar la cajita si todos los requisitos se cumplen
-    const allValid = validation.minLength && 
-                     validation.hasUpperCase && 
-                     validation.hasLowerCase && 
-                     validation.hasNumber;
-    
-    if (allValid && showPasswordValidation) {
-      // Pequeño delay para que el usuario vea el último check verde
-      setTimeout(() => {
-        setShowPasswordValidation(false);
-      }, 500);
-    }
-  }, [formData.password]);
-
-  // Validar coincidencia de contraseñas
-  useEffect(() => {
-    if (formData.confirmPassword.length > 0) {
-      setPasswordMismatch(formData.password !== formData.confirmPassword);
-    } else {
-      setPasswordMismatch(false);
-    }
-  }, [formData.password, formData.confirmPassword]);
+  // Hooks de validación
+  const { isValid: isEmailValid } = useEmailValidation(formData.correo);
+  const { validation: passwordValidation, isValid: isPasswordValid, showValidation: showPasswordValidation, setShowValidation: setShowPasswordValidation } = usePasswordValidation(formData.password);
+  const { passwordMismatch } = usePasswordMatch(formData.password, formData.confirmPassword);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -69,13 +36,20 @@ export default function RegisterPage() {
     setError('');
   };
 
-  const isPasswordValid = () => {
-    return (
-      passwordValidation.minLength &&
-      passwordValidation.hasUpperCase &&
-      passwordValidation.hasLowerCase &&
-      passwordValidation.hasNumber
-    );
+  const isFormValid = () => {
+    // Validar que todos los campos estén llenos
+    if (!formData.nombresCompletos || !formData.correo || !formData.password || !formData.confirmPassword) {
+      return false;
+    }
+
+    // Validar email
+    if (!isEmailValid) return false;
+    
+    // Si no ha empezado a escribir la contraseña, no validar
+    if (!formData.password) return true;
+    
+    // Si ya empezó a escribir, validar
+    return isPasswordValid && !passwordMismatch;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,8 +57,15 @@ export default function RegisterPage() {
     setLoading(true);
     setError('');
 
+    // Validación de email
+    if (!isEmailValid) {
+      setError('Por favor ingresa un correo electrónico válido');
+      setLoading(false);
+      return;
+    }
+
     // Validación de contraseñas
-    if (!isPasswordValid()) {
+    if (!isPasswordValid) {
       setError('Por favor cumple con todos los requisitos de contraseña');
       setLoading(false);
       return;
@@ -148,27 +129,20 @@ export default function RegisterPage() {
           />
 
           {/* Email */}
-          <input
-            type="email"
+          <EmailInput
             name="correo"
             placeholder="Correo electrónico"
             value={formData.correo}
             onChange={handleChange}
-            required
-            className="auth-input"
           />
 
           {/* Password */}
-          <input
-            type="password"
+          <PasswordInput
             name="password"
             placeholder="Contraseña"
             value={formData.password}
             onChange={handleChange}
             onFocus={() => setShowPasswordValidation(true)}
-            required
-            minLength={8}
-            className="auth-input"
           />
 
           {/* Validación de contraseña */}
@@ -242,15 +216,12 @@ export default function RegisterPage() {
           )}
 
           {/* Confirmar Password */}
-          <input
-            type="password"
+          <PasswordInput
             name="confirmPassword"
             placeholder="Confirmar contraseña"
             value={formData.confirmPassword}
             onChange={handleChange}
-            required
-            minLength={8}
-            className={`auth-input ${passwordMismatch ? 'password-mismatch' : ''}`}
+            hasError={passwordMismatch}
           />
 
           {/* Mensaje de error de coincidencia */}
@@ -266,7 +237,7 @@ export default function RegisterPage() {
           {/* Botón Submit */}
           <button
             type="submit"
-            disabled={loading || !isPasswordValid() || passwordMismatch}
+            disabled={loading || !isFormValid()}
             className="btn-ingresar"
           >
             {loading ? 'REGISTRANDO...' : 'REGISTRARSE'}

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/auth.store';
+import PasswordInput from '@/components/forms/PasswordInput';
+import EmailInput from '@/components/forms/EmailInput';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -65,25 +67,19 @@ export default function LoginPage() {
           )}
 
           {/* Email */}
-          <input
-            type="email"
+          <EmailInput
             name="correo"
             placeholder="Correo electrónico"
             value={formData.correo}
             onChange={handleChange}
-            required
-            className="auth-input"
           />
 
           {/* Password */}
-          <input
-            type="password"
+          <PasswordInput
             name="password"
             placeholder="Contraseña"
             value={formData.password}
             onChange={handleChange}
-            required
-            className="auth-input"
           />
 
           {/* Botón Submit */}

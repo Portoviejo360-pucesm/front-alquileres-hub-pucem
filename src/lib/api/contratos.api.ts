@@ -4,7 +4,7 @@ import { api } from './client';
 import type { Contrato, GenerarContratoRequest } from '@/types/reserva';
 
 const USER_ID = '05849b45-3a8b-4cd3-b2d8-5de2162c42f3';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const API_PREFIX = process.env.NEXT_PUBLIC_API_PREFIX ?? '/api';
 
 export const contratosApi = {

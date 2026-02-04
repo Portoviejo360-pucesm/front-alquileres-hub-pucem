@@ -4,15 +4,15 @@ import Link from 'next/link';
 import { getColorByEstado } from '@/utils/getColorByEstado';
 
 interface PropertyCardProps {
-  id: string | number;
+  id: string;
   title: string;
   location: string;
   image: string;
   estado: string;
   price: string;
   isFavorite: boolean;
-  onToggleFavorite: (id: string | number) => void;
-  onViewDetails?: (id: string | number) => void;
+  onToggleFavorite: (id: string) => void;
+  onViewDetails?: (id: string) => void;
 }
 
 export default function PropertyCard({

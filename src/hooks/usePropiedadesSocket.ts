@@ -20,17 +20,18 @@ export function usePropiedadesSocket() {
     socket.on('connect', () => {
       console.log('🟢 WS conectado:', socket.id);
     });
-    socket.on("propiedad:estado-cambiado", (payload) => {
-    console.log("📦 Estado recibido por WS:", payload);
 
-  setPropiedades(prev =>
-    prev.map(p =>
-      p.id === payload.id_propiedad
-        ? { ...p, estado: payload.estado }
-        : p
-    )
-  );
-});
+    socket.on('propiedad:estado-cambiado', (payload: EstadoPayload) => {
+      console.log('📦 Estado recibido por WS:', payload);
+
+      setPropiedades(prev =>
+        prev.map(p =>
+          p.id === payload.id_propiedad
+            ? { ...p, estado: payload.estado }
+            : p
+        )
+      );
+    });
 
     return () => {
       socket.disconnect();

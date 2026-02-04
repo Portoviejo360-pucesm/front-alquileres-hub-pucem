@@ -1,68 +1,98 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import { propiedadesApi } from '@/lib/api/propiedades.api';
+import { Propiedad } from '@/types/propiedad';
+import {
+  getPropertyTitle,
+  getPropertyLocation,
+  getPropertyStatus,
+  getPropertyPriceLabel,
+  getPropertyAmenities
+} from '@/lib/utils/propertyHelpers';
+import EstadoBadge from '@/components/propiedades/EstadoBadge';
 
 export default function PropiedadDetailPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
 
-  // Datos mock
-  const [propiedad] = useState({
-    id: parseInt(id),
-    titulo: 'Departamento Moderno en el Centro',
-    descripcion: 'Hermoso departamento de 2 habitaciones con vista panorámica de la ciudad. Ubicado cerca de universidades, centros comerciales y servicios. Ideal para estudiantes o profesionales jóvenes. Cuenta con acabados modernos, cocina equipada y baño completo. El edificio tiene seguridad 24/7 y estacionamiento disponible.',
-    direccion: 'Av. Universitaria #123, Portoviejo',
-    precio: 350,
-    estado: 'disponible',
-    esAmoblado: true,
-    publicoObjetivo: 'Estudiantes',
-    fechaPublicacion: '2024-01-15',
-    arrendador: {
-      nombre: 'Juan Pérez García',
-      telefono: '0987654321',
-      email: 'juan.perez@email.com'
-    },
-    servicios: [
-      { nombre: 'Agua', incluido: true },
-      { nombre: 'Luz', incluido: true },
-      { nombre: 'Internet', incluido: true },
-      { nombre: 'Cable', incluido: false },
-      { nombre: 'Gas', incluido: true }
-    ]
-  });
+  const [propiedad, setPropiedad] = useState<Propiedad | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDelete = () => {
+  useEffect(() => {
+    const fetchPropiedad = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await propiedadesApi.obtenerPorId(id);
+        if (!data) {
+          throw new Error('Propiedad no encontrada');
+        }
+        setPropiedad(data);
+      } catch (err) {
+        console.error('Error fetching propiedad:', err);
+        setError('No se pudo cargar la propiedad. Por favor, intenta de nuevo.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchPropiedad();
+    }
+  }, [id]);
+
+  const handleDelete = async () => {
     if (confirm('¿Estás seguro de eliminar esta propiedad?')) {
-      // TODO: Llamar al API
-      console.log('Eliminar propiedad:', id);
-      router.push('/propiedades');
+      try {
+        await propiedadesApi.eliminar(id);
+        router.push('/propiedades');
+      } catch (err) {
+        console.error('Error deleting propiedad:', err);
+        alert('No se pudo eliminar la propiedad.');
+      }
     }
   };
 
-  const getEstadoNombre = (estado: string) => {
-    const estados: Record<string, string> = {
-      disponible: 'Disponible',
-      ocupada: 'Ocupada',
-      mantenimiento: 'En Mantenimiento'
-    };
-    return estados[estado] || estado;
-  };
+  if (loading) {
+    return (
+      <div className="propiedad-detail-container" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+        <div className="spinner"></div>
+        <p style={{ marginTop: '1rem', color: '#6b7280' }}>Cargando datos de la propiedad...</p>
+      </div>
+    );
+  }
+
+  if (error || !propiedad) {
+    return (
+      <div className="propiedad-detail-container" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+        <h2 style={{ color: '#ef4444', marginBottom: '1rem' }}>Error</h2>
+        <p style={{ color: '#6b7280', marginBottom: '2rem' }}>{error || 'Propiedad no encontrada'}</p>
+        <button onClick={() => router.push('/propiedades')} className="btn-editar" style={{ margin: '0 auto', display: 'block' }}>
+          Volver a mis propiedades
+        </button>
+      </div>
+    );
+  }
+
+  const title = getPropertyTitle(propiedad);
+  const location = getPropertyLocation(propiedad);
+  const priceLabel = getPropertyPriceLabel(propiedad);
+  const amenities = getPropertyAmenities(propiedad);
+  const estado = getPropertyStatus(propiedad);
 
   return (
     <div className="propiedad-detail-container">
       {/* Header */}
       <div className="propiedad-detail-header">
         <div className="detail-title-section">
-          <h1 className="detail-title">{propiedad.titulo}</h1>
+          <h1 className="detail-title">{title}</h1>
           <p className="detail-subtitle">
-            Publicado el {new Date(propiedad.fechaPublicacion).toLocaleDateString('es-ES', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric'
-            })}
+            📍 {location}
           </p>
         </div>
 
@@ -82,17 +112,6 @@ export default function PropiedadDetailPage() {
         </div>
       </div>
 
-      {/* Galería */}
-      <div className="propiedad-detail-gallery">
-        <div className="gallery-main">
-          FOTO PRINCIPAL
-        </div>
-        <div className="gallery-thumbnails">
-          <div className="gallery-thumbnail">FOTO 2</div>
-          <div className="gallery-thumbnail">FOTO 3</div>
-        </div>
-      </div>
-
       {/* Grid de contenido */}
       <div className="propiedad-detail-grid">
         {/* Columna principal */}
@@ -101,7 +120,7 @@ export default function PropiedadDetailPage() {
           <div className="info-card">
             <h3 className="info-card-title">Descripción</h3>
             <p style={{ lineHeight: '1.6', color: '#4b5563' }}>
-              {propiedad.descripcion}
+              {propiedad.descripcion || propiedad.description || 'Sin descripción disponible.'}
             </p>
           </div>
 
@@ -112,9 +131,7 @@ export default function PropiedadDetailPage() {
               <div className="info-item">
                 <div className="info-item-label">Estado</div>
                 <div className="info-item-value">
-                  <span className={`badge ${propiedad.estado}`}>
-                    {getEstadoNombre(propiedad.estado)}
-                  </span>
+                  <EstadoBadge estado={estado} />
                 </div>
               </div>
 
@@ -126,43 +143,37 @@ export default function PropiedadDetailPage() {
               </div>
 
               <div className="info-item">
-                <div className="info-item-label">Público Objetivo</div>
-                <div className="info-item-value">{propiedad.publicoObjetivo}</div>
+                <div className="info-item-label">Superficie</div>
+                <div className="info-item-value">
+                  {propiedad.superficie || propiedad.area || propiedad.metros_cuadrados || '--'} m²
+                </div>
               </div>
 
               <div className="info-item">
-                <div className="info-item-label">Ubicación</div>
-                <div className="info-item-value">{propiedad.direccion}</div>
+                <div className="info-item-label">Habitaciones</div>
+                <div className="info-item-value">
+                  {propiedad.habitaciones || propiedad.bedrooms || propiedad.rooms || '--'}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Servicios */}
+          {/* Servicios / Amenidades */}
           <div className="info-card">
-            <h3 className="info-card-title">Servicios</h3>
+            <h3 className="info-card-title">Amenidades</h3>
             <div className="servicios-list">
-              {propiedad.servicios.map((servicio, index) => (
-                <div 
-                  key={index} 
-                  className={`servicio-badge ${servicio.incluido ? 'incluido' : ''}`}
-                >
-                  {servicio.incluido && (
+              {amenities.length > 0 ? (
+                amenities.map((amenity, index) => (
+                  <div key={index} className="servicio-badge incluido">
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                  )}
-                  {servicio.nombre}
-                  {!servicio.incluido && ' (No incluido)'}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Ubicación */}
-          <div className="info-card">
-            <h3 className="info-card-title">Ubicación</h3>
-            <div className="map-preview">
-              📍 Mapa (por implementar)
+                    {amenity}
+                  </div>
+                ))
+              ) : (
+                <p style={{ color: '#6b7280' }}>No se especificaron amenidades.</p>
+              )}
             </div>
           </div>
         </div>
@@ -171,11 +182,11 @@ export default function PropiedadDetailPage() {
         <div className="propiedad-detail-sidebar">
           {/* Precio */}
           <div className="price-card">
-            <div className="price-card-amount">${propiedad.precio}</div>
+            <div className="price-card-amount">{priceLabel}</div>
             <div className="price-card-period">por mes</div>
-            <button className="btn-contactar">
-              Contactar al Arrendador
-            </button>
+            <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '1rem' }}>
+              ID de Referencia: {id}
+            </p>
           </div>
 
           {/* Información del arrendador */}
@@ -183,17 +194,11 @@ export default function PropiedadDetailPage() {
             <h3 className="info-card-title">Arrendador</h3>
             <div className="info-item" style={{ marginBottom: '12px' }}>
               <div className="info-item-label">Nombre</div>
-              <div className="info-item-value">{propiedad.arrendador.nombre}</div>
+              <div className="info-item-value">{propiedad.arrendador?.nombre || propiedad.arrendador?.name || 'Cargando...'}</div>
             </div>
             <div className="info-item" style={{ marginBottom: '12px' }}>
               <div className="info-item-label">Teléfono</div>
-              <div className="info-item-value">{propiedad.arrendador.telefono}</div>
-            </div>
-            <div className="info-item">
-              <div className="info-item-label">Email</div>
-              <div className="info-item-value" style={{ wordBreak: 'break-all' }}>
-                {propiedad.arrendador.email}
-              </div>
+              <div className="info-item-value">{propiedad.arrendador?.telefono || propiedad.arrendador?.phone || '--'}</div>
             </div>
           </div>
         </div>

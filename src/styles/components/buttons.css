@@ -1,0 +1,121 @@
+/* src/styles/components/buttons.css */
+
+/* ========================================
+   BUTTON COMPONENT BASE
+   ======================================== */
+
+.btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.btn-base:disabled,
+.btn-base.btn-loading {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ========================================
+   BUTTON VARIANTS
+   ======================================== */
+
+.btn-primary {
+  background-color: var(--brand-green);
+  color: var(--white);
+}
+
+.btn-primary:hover:not(:disabled):not(.btn-loading) {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background-color: #6b7280;
+  color: var(--white);
+}
+
+.btn-secondary:hover:not(:disabled):not(.btn-loading) {
+  opacity: 0.9;
+}
+
+.btn-outline {
+  border: 2px solid var(--brand-green);
+  color: var(--brand-green);
+  background-color: transparent;
+}
+
+.btn-outline:hover:not(:disabled):not(.btn-loading) {
+  background-color: var(--brand-green);
+  color: var(--white);
+}
+
+.btn-ghost {
+  color: #374151;
+  background-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled):not(.btn-loading) {
+  background-color: #f3f4f6;
+}
+
+.btn-danger {
+  background-color: var(--brand-red);
+  color: var(--white);
+}
+
+.btn-danger:hover:not(:disabled):not(.btn-loading) {
+  opacity: 0.9;
+}
+
+/* ========================================
+   BUTTON SIZES
+   ======================================== */
+
+.btn-sm {
+  padding: 6px 16px;
+  font-size: 14px;
+}
+
+.btn-md {
+  padding: 12px 24px;
+  font-size: 15px;
+}
+
+.btn-lg {
+  padding: 16px 32px;
+  font-size: 16px;
+}
+
+/* ========================================
+   BUTTON LOADING SPINNER
+   ======================================== */
+
+.btn-spinner {
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+}
+
+.btn-spinner-icon-disabled {
+  opacity: 0.25;
+}
+
+.btn-spinner-icon-enabled {
+  opacity: 0.75;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -81,7 +81,21 @@ export default function PriceSlider({
           step={step}
           value={safeMin}
           onChange={handleMin}
-          className="range-input"
+          className="price-slider-input"
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '100%',
+            background: 'transparent',
+            pointerEvents: 'none',
+            WebkitAppearance: 'none',
+            appearance: 'none',
+            height: '2rem',
+            margin: 0,
+          }}
           aria-label="Precio mínimo"
         />
         <input
@@ -91,7 +105,21 @@ export default function PriceSlider({
           step={step}
           value={safeMax}
           onChange={handleMax}
-          className="range-input"
+          className="price-slider-input"
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '100%',
+            background: 'transparent',
+            pointerEvents: 'none',
+            WebkitAppearance: 'none',
+            appearance: 'none',
+            height: '2rem',
+            margin: 0,
+          }}
           aria-label="Precio máximo"
         />
 
@@ -105,56 +133,43 @@ export default function PriceSlider({
         {!active ? 'Sin filtro de precio (mueve la barra para aplicar)' : 'Filtro de precio aplicado'}
       </div>
 
-      <style jsx>{`
-        .range-input {
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 100%;
-          background: transparent;
-          pointer-events: none; /* importante para doble thumb */
-          -webkit-appearance: none;
-          appearance: none;
-          height: 2rem;
-          margin: 0;
-        }
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .price-slider-input::-webkit-slider-runnable-track {
+            background: transparent;
+            height: 0.5rem;
+          }
 
-        .range-input::-webkit-slider-runnable-track {
-          background: transparent;
-          height: 0.5rem;
-        }
+          .price-slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            pointer-events: all;
+            width: 18px;
+            height: 18px;
+            border-radius: 9999px;
+            background: #ffffff;
+            border: 3px solid ${active ? '#dc2626' : '#9ca3af'};
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+          }
 
-        .range-input::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          pointer-events: all; /* el thumb sí recibe eventos */
-          width: 18px;
-          height: 18px;
-          border-radius: 9999px;
-          background: #ffffff;
-          border: 3px solid ${active ? '#dc2626' : '#9ca3af'};
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-          cursor: pointer;
-        }
+          .price-slider-input::-moz-range-track {
+            background: transparent;
+            height: 0.5rem;
+          }
 
-        .range-input::-moz-range-track {
-          background: transparent;
-          height: 0.5rem;
-        }
-
-        .range-input::-moz-range-thumb {
-          pointer-events: all;
-          width: 18px;
-          height: 18px;
-          border-radius: 9999px;
-          background: #ffffff;
-          border: 3px solid ${active ? '#dc2626' : '#9ca3af'};
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-          cursor: pointer;
-        }
-      `}</style>
+          .price-slider-input::-moz-range-thumb {
+            pointer-events: all;
+            width: 18px;
+            height: 18px;
+            border-radius: 9999px;
+            background: #ffffff;
+            border: 3px solid ${active ? '#dc2626' : '#9ca3af'};
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+          }
+        `
+      }} />
     </div>
   );
 }

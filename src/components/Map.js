@@ -49,11 +49,13 @@ const Map = ({ properties = [], onBoundsChange, zoom = DEFAULT_ZOOM, showPopup =
         });
       },
       (err) => {
-        console.warn('Permiso de ubicación denegado', err);
+        // OJO!! HAY QUE IMPLEMENTAR QUE TOME LA UBICACIÓN REAL SI EL USUARIO DA PERMISO
+        //Silenciar el error de geolocalización - es esperado si el usuario niega el permiso
+        // El mapa seguirá funcionando con las coordenadas por defecto
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
+        enableHighAccuracy: false,
+        timeout: 5000,
       }
     );
   }, []);

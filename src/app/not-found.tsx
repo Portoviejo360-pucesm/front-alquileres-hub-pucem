@@ -1,25 +1,16 @@
 import Link from "next/link";
+import '@/styles/components/layout.css';
 
 export default function NotFound() {
   return (
-    <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24 }}>
-      <div style={{ textAlign: "center", maxWidth: 520 }}>
-        <h2 style={{ margin: 0 }}>Página no encontrada</h2>
-        <p style={{ marginTop: 10, color: "#555" }}>
+    <div className="not-found-container">
+      <div className="not-found-content">
+        <h2 className="not-found-title">Página no encontrada</h2>
+        <p className="not-found-text">
           La ruta que intentaste abrir no existe.
         </p>
 
-        <Link
-          href="/dashboard"
-          style={{
-            display: "inline-block",
-            marginTop: 14,
-            padding: "10px 14px",
-            borderRadius: 10,
-            border: "1px solid #ddd",
-            textDecoration: "none",
-          }}
-        >
+        <Link href="/dashboard" className="not-found-link">
           Ir al dashboard
         </Link>
       </div>
