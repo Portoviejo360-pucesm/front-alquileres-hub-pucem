@@ -35,15 +35,8 @@ interface MapBounds {
 }
 
 export default function Home() {
-  // 🚨 TEMPORAL: Usar datos mock en lugar del hook
-  // const { propiedades } = usePropiedades();
-  const propiedades = MOCK_PROPIEDADES;
-  // 🚨 FIN TEMPORAL
-  
-  // 🚨 TEMPORAL: Comentar socket mientras se prueban datos estáticos
-  // usePropiedadesSocket();
-  // 🚨 FIN TEMPORAL
-  
+  const router = useRouter();
+  const { propiedades } = usePropiedades();
   const { isAuthenticated, loadUser } = useAuthStore();
 
   usePropiedadesSocket();
