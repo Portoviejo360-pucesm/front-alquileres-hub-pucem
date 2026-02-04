@@ -7,8 +7,8 @@ import PropertyFilters from '@/components/PropertyFilters';
 import PropertyCard from '@/components/propiedades/PropertyCard';
 import MapWrapper from '@/components/MapWrapper';
 // 🚨 TEMPORAL: Comentar estas líneas cuando el backend esté listo
-// import { usePropiedades } from '@/hooks/usePropiedades';
-// import { usePropiedadesSocket } from '@/hooks/usePropiedadesSocket';
+import { usePropiedades } from '@/hooks/usePropiedades';
+import { usePropiedadesSocket } from '@/hooks/usePropiedadesSocket';
 import { MOCK_PROPIEDADES } from '@/lib/mockData';
 // 🚨 FIN TEMPORAL
 import { useAuthStore } from '@/store/auth.store';
@@ -31,12 +31,11 @@ const MAX_PRICE_LIMIT = 5000;
 
 export default function Home() {
   // 🚨 TEMPORAL: Usar datos mock en lugar del hook
-  // const { propiedades } = usePropiedades();
-  const propiedades = MOCK_PROPIEDADES;
+  const { propiedades } = usePropiedades();
   // 🚨 FIN TEMPORAL
   
   // 🚨 TEMPORAL: Comentar socket mientras se prueban datos estáticos
-  // usePropiedadesSocket();
+  usePropiedadesSocket();
   // 🚨 FIN TEMPORAL
   
   const { isAuthenticated, loadUser } = useAuthStore();
