@@ -1,6 +1,5 @@
 // lib/api/auth.api.ts
 
-import { api } from "@/lib/api/client";
 import { tokenStorage } from "@/lib/auth/token";
 import type {
   LoginRequest,
@@ -9,15 +8,46 @@ import type {
   RegisterRequest
 } from "@/types/auth";
 
+// TEMPORAL: Conectar directamente al backend de auth (puerto 8001)
+// hasta resolver el problema del proxy en el API Gateway
+const AUTH_API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
+const AUTH_API_PREFIX = "/api/v1/auth";
+
+async function authFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const url = `${AUTH_API_URL}${AUTH_API_PREFIX}${path}`;
+
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+  if (!res.ok) {
+    let message = `Error ${res.status}`;
+    try {
+      const data = await res.json();
+      message = data?.message || data?.error || message;
+    } catch {
+      const text = await res.text().catch(() => "");
+      if (text) message = text;
+    }
+    throw new Error(message);
+  }
+
+  if (res.status === 204) return undefined as T;
+  return (await res.json()) as T;
+}
+
 export const authApi = {
   /**
    * Registrar nuevo usuario
    */
   async register(payload: RegisterRequest): Promise<{ message: string }> {
-    const response = await api<{ success: boolean; message: string; data: any }>("/auth/register", {
+    const response = await authFetch<{ success: boolean; message: string; data: any }>("/register", {
       method: "POST",
-      body: payload,
-      auth: false,
+      body: JSON.stringify(payload),
     });
     return { message: response.message || 'Usuario registrado exitosamente' };
   },
@@ -29,40 +59,9 @@ export const authApi = {
    * - Password: Admin123!
    */
   async login(payload: LoginRequest): Promise<LoginResponse> {
-    // Verificar si son las credenciales del administrador estático
-    const ADMIN_EMAIL = 'admin@portoviejo360.com';
-    const ADMIN_PASSWORD = 'Admin123!';
-
-    if (payload.correo === ADMIN_EMAIL && payload.password === ADMIN_PASSWORD) {
-      // Generar token mock para admin
-      const adminToken = 'admin-static-token-' + Date.now();
-      
-      // Usuario administrador mock
-      const adminUser: PerfilResponse = {
-        id: 'admin-1',
-        nombresCompletos: 'Administrador Principal',
-        correo: ADMIN_EMAIL,
-        rolId: 1, // Administrador
-        fechaRegistro: '2024-01-01T00:00:00.000Z',
-        rol: {
-          nombre: 'Administrador'
-        }
-      };
-
-      // Guardar token en localStorage
-      tokenStorage.set(adminToken);
-
-      return { 
-        token: adminToken, 
-        usuario: adminUser 
-      };
-    }
-
-    // Si no son credenciales de admin, usar la API normal de Supabase
-    const response = await api<{ success: boolean; message: string; data: LoginResponse }>("/auth/login", {
+    const response = await authFetch<{ success: boolean; message: string; data: LoginResponse }>("/login", {
       method: "POST",
-      body: payload,
-      auth: false,
+      body: JSON.stringify(payload),
     });
 
     // Extraer data de la respuesta envuelta
@@ -79,25 +78,12 @@ export const authApi = {
    * Retorna perfil de admin si el token es estático
    */
   async perfil(): Promise<PerfilResponse> {
-    // Verificar si es un token de admin estático
-    const currentToken = tokenStorage.get();
-    if (currentToken?.startsWith('admin-static-token-')) {
-      return {
-        id: 'admin-1',
-        nombresCompletos: 'Administrador Principal',
-        correo: 'admin@portoviejo360.com',
-        rolId: 1, // Administrador
-        fechaRegistro: '2024-01-01T00:00:00.000Z',
-        rol: {
-          nombre: 'Administrador'
-        }
-      };
-    }
-
-    // Si no es admin estático, usar la API normal
-    const response = await api<{ success: boolean; data: PerfilResponse }>("/auth/perfil", {
+    const token = tokenStorage.get();
+    const response = await authFetch<{ success: boolean; data: PerfilResponse }>("/perfil", {
       method: "GET",
-      auth: true
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
     return response.data;
   },
