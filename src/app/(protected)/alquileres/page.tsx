@@ -41,9 +41,9 @@ export default function AlquileresPage() {
         <div className="alquileres-container">
             {/* Header */}
             <div className="alquileres-header">
-                <h1 className="alquileres-title">Historial de Alquileres</h1>
+                <h1 className="alquileres-title">Historial de Arriendos</h1>
                 <p className="alquileres-subtitle">
-                    Visualiza y gestiona todas tus reservas
+                    Visualiza y gestiona todos tus arriendos
                 </p>
             </div>
 

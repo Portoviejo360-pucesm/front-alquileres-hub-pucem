@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import PublicTopBar from '@/components/layout/PublicTopBar';
 import AppShell from '@/components/layout/AppShell';
 import MapDetail from '@/components/MapDetail';
@@ -10,7 +11,15 @@ import PropertyInfo from '@/components/propiedades/PropertyInfo';
 import PropertyContact from '@/components/propiedades/PropertyContact';
 import { useAuthStore } from '@/store/auth.store';
 import { propiedadesApi } from '@/lib/api/propiedades.api';
-import { sanitizeProperty } from '@/lib/utils/propertyHelpers';
+import { 
+  sanitizeProperty,
+  getPropertyTitle,
+  getPropertyLocation,
+  getPropertyImage,
+  getPropertyStatus,
+  getPropertyPriceLabel,
+  getPropertyAmenities
+} from '@/lib/utils/propertyHelpers';
 import type { Propiedad } from '@/types/propiedad';
 
 export default function PropiedadDetallesPage() {
@@ -21,6 +30,7 @@ export default function PropiedadDetallesPage() {
   const [rawPropiedad, setRawPropiedad] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // Normalizar datos
   const propiedad = useMemo(() => {
@@ -72,82 +82,156 @@ export default function PropiedadDetallesPage() {
   }
 
   if (error || !propiedad) {
-    return (
-      <LayoutWrapper isAuthenticated={isAuthenticated}>
-        <div className="dashboard-container">
-          <div className="dashboard-card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-            <h2 className="card-title" style={{ color: '#ef4444', marginBottom: '1rem' }}>
-              Error
-            </h2>
-            <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
-              {error || 'Propiedad no encontrada'}
-            </p>
-            <button onClick={() => router.push('/')} className="quick-action-btn">
-              ← Volver al inicio
-            </button>
-          </div>
+    const errorContent = (
+      <div className="dashboard-container">
+        <div className="dashboard-card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+          <h2 className="card-title" style={{ color: '#ef4444', marginBottom: '1rem' }}>Error</h2>
+          <p style={{ color: '#6b7280', marginBottom: '2rem' }}>{error || 'Propiedad no encontrada'}</p>
+          <button onClick={() => router.push('/')} className="quick-action-btn">
+            ← Volver al inicio
+          </button>
         </div>
-      </LayoutWrapper>
+      </div>
+    );
+
+    if (isAuthenticated) {
+      return (
+        <AppShell>
+          <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--brand-bg)' }}>
+            {errorContent}
+          </div>
+        </AppShell>
+      );
+    }
+
+    return (
+      <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--brand-bg)' }}>
+        <PublicTopBar />
+        {errorContent}
+      </div>
     );
   }
 
-  const hasCoordinates = propiedad.lat && propiedad.lng && 
-    !isNaN(Number(propiedad.lat)) && !isNaN(Number(propiedad.lng));
+  const title = getPropertyTitle(propiedad);
+  const location = getPropertyLocation(propiedad);
+  const mainImage = getPropertyImage(propiedad);
+  const estado = getPropertyStatus(propiedad);
+  const priceLabel = getPropertyPriceLabel(propiedad);
+  const amenities = getPropertyAmenities(propiedad);
+  
+  // Verificar si tiene coordenadas
+  const hasCoordinates = !!(
+    propiedad.lat && 
+    propiedad.lng && 
+    !isNaN(Number(propiedad.lat)) && 
+    !isNaN(Number(propiedad.lng))
+  );
 
-  return (
-    <LayoutWrapper isAuthenticated={isAuthenticated}>
-      <div className="dashboard-container" style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        {/* Header mejorado con breadcrumb */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <button 
-            onClick={() => router.back()} 
-            className="quick-action-btn secondary" 
-            style={{ marginBottom: '1rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-          >
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-            </svg>
-            Volver
-          </button>
-          
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'flex-start', 
-            gap: '1rem', 
-            flexWrap: 'wrap' 
-          }}>
-            <div style={{ flex: 1, minWidth: '250px' }}>
-              <h1 className="dashboard-title" style={{ marginBottom: '0.5rem' }}>
-                {propiedad.title}
-              </h1>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#6b7280' }}>
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-                <p className="dashboard-subtitle" style={{ margin: 0 }}>{propiedad.location}</p>
-              </div>
+  // Componente para badge de estado
+  const EstadoBadge = ({ estado }: { estado: string }) => (
+    <span className={`badge ${estado.toLowerCase()}`}>
+      {estado}
+    </span>
+  );
+
+  // Obtener todas las imágenes si existen
+  const images = propiedad.imagenes || propiedad.images || [mainImage];
+  const selectedImage = images[selectedImageIndex] || mainImage;
+
+  // Información adicional
+  const descripcion = propiedad.descripcion || propiedad.description || 
+    'Esta es una propiedad disponible para arriendo en excelente ubicación.';
+  
+  const superficie = propiedad.superficie || propiedad.area || propiedad.metros_cuadrados;
+  const habitaciones = propiedad.habitaciones || propiedad.bedrooms || propiedad.rooms;
+  const banos = propiedad.banos || propiedad.bathrooms || propiedad.banios;
+  const garaje = propiedad.garaje || propiedad.parking || propiedad.estacionamiento;
+
+  // Contacto del arrendador
+  const arrendadorNombre = propiedad.arrendador?.nombre || 
+    propiedad.arrendador?.name || 
+    'Arrendador disponible';
+  
+  const arrendadorTelefono = propiedad.arrendador?.telefono || 
+    propiedad.arrendador?.phone || 
+    propiedad.arrendador?.celular;
+  
+  const arrendadorEmail = propiedad.arrendador?.email || 
+    propiedad.arrendador?.correo;
+
+  const pageContent = (
+    <div className="dashboard-container">
+      {/* Header con botón volver */}
+      <div className="dashboard-header" style={{ marginBottom: '1.5rem' }}>
+        <button 
+          onClick={() => router.back()} 
+          className="quick-action-btn secondary"
+          style={{ marginBottom: '1rem' }}
+        >
+          ← Volver
+        </button>
+        <h1 className="dashboard-title">{title}</h1>
+        <p className="dashboard-subtitle">📍 {location}</p>
+      </div>
+
+      {/* Galería de imágenes */}
+      <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
+        <div className="property-gallery">
+          <div className="gallery-main">
+            <Image 
+              src={selectedImage} 
+              alt={title} 
+              fill
+              className="gallery-main-image"
+              style={{ objectFit: 'cover' }}
+              priority
+            />
+            <div className="gallery-badge">
+              <EstadoBadge estado={estado} />
             </div>
-            
-            <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
-              <button 
-                className="quick-action-btn secondary" 
-                title="Compartir"
-                style={{ width: '44px', height: '44px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                </svg>
-              </button>
-              <button 
-                className="quick-action-btn secondary" 
-                title="Guardar"
-                style={{ width: '44px', height: '44px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-                </svg>
-              </button>
+          </div>
+          
+          {images.length > 1 && (
+            <div className="gallery-thumbnails">
+              {images.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={`gallery-thumbnail ${index === selectedImageIndex ? 'active' : ''}`}
+                >
+                  <Image 
+                    src={img} 
+                    alt={`${title} - Imagen ${index + 1}`}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Grid de 2 columnas: Info principal + Precio/Características */}
+      <div className="dashboard-content" style={{ marginBottom: '1.5rem' }}>
+        {/* Columna Izquierda: Descripción y Amenidades */}
+        <div>
+          {/* Precio destacado */}
+          <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
+            <div className="stat-card">
+              <div className="stat-card-inner">
+                <div className="stat-content">
+                  <p className="stat-label">Precio Mensual</p>
+                  <h3 className="stat-value">{priceLabel}</h3>
+                  <p className="stat-change positive">Disponible para arriendo</p>
+                </div>
+                <div className="stat-icon purple">
+                  <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -319,6 +403,12 @@ export default function PropiedadDetallesPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+
+  return (
+    <LayoutWrapper isAuthenticated={isAuthenticated}>
+      {pageContent}
     </LayoutWrapper>
   );
 }

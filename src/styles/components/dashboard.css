@@ -83,6 +83,14 @@
   color: #ef4444;
 }
 
+.stat-change.neutral {
+  color: #6b7280;
+}
+
+.stat-change.warning {
+  color: #f59e0b;
+}
+
 .stat-icon {
   width: 48px;
   height: 48px;
@@ -111,6 +119,16 @@
 .stat-icon.purple {
   background-color: #ede9fe;
   color: #8b5cf6;
+}
+
+.stat-icon.red {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.stat-icon.yellow {
+  background-color: #fef3c7;
+  color: #f59e0b;
 }
 
 /* --- SECCIÓN DE CONTENIDO --- */
@@ -303,6 +321,72 @@
 .property-badge.mantenimiento {
   background-color: #fee2e2;
   color: #dc2626;
+}
+
+/* --- BADGES GENERALES --- */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-success, .badge.activo {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.badge-warning, .badge.pendiente {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.badge-error, .badge.cancelado {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.badge-neutral, .badge.finalizado {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.badge-info {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+/* --- SECCIONES DE DASHBOARD --- */
+.dashboard-section {
+  margin-bottom: 32px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.section-link {
+  font-size: 14px;
+  color: var(--brand-green);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.section-link:hover {
+  opacity: 0.8;
 }
 
 /* --- GRÁFICO SIMPLE --- */

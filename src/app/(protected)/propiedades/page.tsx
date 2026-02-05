@@ -30,7 +30,9 @@ export default function PropiedadesPage() {
         setError(null);
       } catch (err: any) {
         console.error('Error al cargar propiedades:', err);
-        setError(err.message || 'Error al cargar propiedades');
+        // Si hay error con la API, usar datos vacíos por ahora
+        setPropiedades([]);
+        setError(err.message || 'No se pudieron cargar las propiedades. Intente más tarde.');
       } finally {
         setLoading(false);
       }

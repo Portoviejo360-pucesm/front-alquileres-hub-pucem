@@ -1,0 +1,31 @@
+/* Estilos específicos para componentes del Dashboard */
+
+.info-box {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.info-box-precio {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-radius: 8px;
+  border: 1px solid #86efac;
+}
+
+.info-label {
+  color: #9ca3af;
+  display: block;
+  font-size: 0.75rem;
+}
+
+.info-value {
+  color: #374151;
+  font-weight: 500;
+}

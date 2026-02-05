@@ -2,10 +2,24 @@
 
 import Link from 'next/link';
 import { useAuthStore } from '@/store/auth.store';
+import DashboardAdmin from '@/components/dashboard/DashboardAdmin';
+import DashboardUsuario from '@/components/dashboard/DashboardUsuario';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
 
+  // Si es administrador (rolId: 1), mostrar Dashboard de Admin
+  if (user?.rolId === 1) {
+    return <DashboardAdmin />;
+  }
+
+  // Usuario común (rolId: 2, sin verificar o con verificación pendiente)
+  // Mostrar dashboard enfocado en arriendos y documentos
+  if (user?.rolId === 2) {
+    return <DashboardUsuario />;
+  }
+
+  // Dashboard para usuarios comunes y arrendadores
   // Calcular stats dinámicamente desde datos reales del usuario
   const propiedadesUsuario = user?.propiedades || [];
   const propiedadesActivas = propiedadesUsuario.filter(p => p.estado.nombre === 'disponible').length;

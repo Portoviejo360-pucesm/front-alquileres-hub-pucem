@@ -41,4 +41,5 @@ export type PerfilResponse = {
       nombre: string;
     };
   }>;
+  totalPropiedades?: number; // Campo agregado por el backend para admin
 };

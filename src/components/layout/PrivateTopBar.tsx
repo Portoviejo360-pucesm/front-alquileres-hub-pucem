@@ -137,6 +137,13 @@ export default function TopBar({ onToggleSidebar }: TopBarProps) {
         <div className="dropdown" ref={userMenuRef}>
           <button
             className="user-menu-btn"
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px',
+              height: '56px',
+              padding: '8px 16px'
+            }}
             onClick={() => {
               setShowUserMenu(!showUserMenu);
               setShowNotifications(false);
@@ -146,8 +153,18 @@ export default function TopBar({ onToggleSidebar }: TopBarProps) {
               {getInitials(user?.nombresCompletos)}
             </div>
 
-            <div className="user-info">
-              <span className="user-name">
+            <div 
+              className="user-info" 
+              style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                justifyContent: 'center',
+                gap: '4px',
+                minWidth: '0',
+                flex: '1'
+              }}
+            >
+              <span className="user-name" style={{ maxWidth: '250px' }}>
                 {user?.nombresCompletos || 'Usuario'}
               </span>
               <span className="user-status">
@@ -155,7 +172,7 @@ export default function TopBar({ onToggleSidebar }: TopBarProps) {
               </span>
             </div>
 
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" style={{ color: '#9ca3af' }}>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" style={{ color: '#9ca3af', flexShrink: 0 }}>
               <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </button>
