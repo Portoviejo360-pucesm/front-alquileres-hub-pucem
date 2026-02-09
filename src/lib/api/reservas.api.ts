@@ -2,20 +2,24 @@
 
 import { api } from './client';
 import type { Reserva, CrearReservaRequest } from '@/types/reserva';
-
-const USER_ID = '05849b45-3a8b-4cd3-b2d8-5de2162c42f3';
+import { getUserIdFromToken } from '@/lib/auth/jwt';
 
 export const reservasApi = {
     /**
      * Crea una nueva reserva
      */
     crearReserva: async (data: CrearReservaRequest): Promise<Reserva> => {
+        const userId = getUserIdFromToken();
+
+        if (!userId) {
+            throw new Error('No hay sesión activa. Por favor, inicia sesión.');
+        }
+
+        // El backend extraerá el userId del token JWT
         return api<Reserva>('/reservas', {
             method: 'POST',
             body: data,
-            headers: {
-                'x-user-id': USER_ID,
-            },
+            auth: true
         });
     },
 
@@ -23,11 +27,16 @@ export const reservasApi = {
      * Obtiene el historial de reservas del usuario actual
      */
     misReservas: async (): Promise<Reserva[]> => {
+        const userId = getUserIdFromToken();
+
+        if (!userId) {
+            throw new Error('No hay sesión activa. Por favor, inicia sesión.');
+        }
+
+        // El backend extraerá el userId del token JWT
         return api<Reserva[]>('/reservas/mis-viajes', {
             method: 'GET',
-            headers: {
-                'x-user-id': USER_ID,
-            },
+            auth: true
         });
     },
 
@@ -35,11 +44,16 @@ export const reservasApi = {
      * Cancela una reserva existente
      */
     cancelarReserva: async (reservaId: string): Promise<Reserva> => {
+        const userId = getUserIdFromToken();
+
+        if (!userId) {
+            throw new Error('No hay sesión activa. Por favor, inicia sesión.');
+        }
+
+        // El backend extraerá el userId del token JWT
         return api<Reserva>(`/reservas/${reservaId}/cancelar`, {
             method: 'PATCH',
-            headers: {
-                'x-user-id': USER_ID,
-            },
+            auth: true
         });
     },
 };

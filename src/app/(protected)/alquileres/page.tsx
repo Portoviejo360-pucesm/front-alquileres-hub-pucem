@@ -18,17 +18,26 @@ export default function AlquileresPage() {
         const cargarReservas = async () => {
             try {
                 setLoading(true);
+                setError(null);
                 const data = await reservasApi.misReservas();
                 setReservas(data);
             } catch (err) {
-                // Si es error de conexión, mostrar mensaje más amigable
-                const errorMessage = err instanceof Error ? err.message : 'Error al cargar reservas';
-                if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
-                    setError('No se pudo conectar al servidor. Verifica que el backend esté activo.');
-                } else {
-                    setError(errorMessage);
-                }
                 console.error('Error al cargar reservas:', err);
+
+                // Mensajes de error más específicos
+                if (err instanceof Error) {
+                    if (err.message.includes('No hay sesión activa')) {
+                        setError('Por favor, inicia sesión para ver tus reservas.');
+                    } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                        setError('No se pudo conectar al servidor. Verifica que el backend esté activo en http://localhost:8001');
+                    } else if (err.message.includes('404')) {
+                        setError('El endpoint de reservas no está disponible. Verifica que el backend esté corriendo.');
+                    } else {
+                        setError(err.message);
+                    }
+                } else {
+                    setError('Error desconocido al cargar reservas');
+                }
             } finally {
                 setLoading(false);
             }

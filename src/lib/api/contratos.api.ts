@@ -2,22 +2,29 @@
 
 import { api } from './client';
 import type { Contrato, GenerarContratoRequest } from '@/types/reserva';
+import { getUserIdFromToken } from '@/lib/auth/jwt';
+import { tokenStorage } from '@/lib/auth/token';
 
-const USER_ID = '05849b45-3a8b-4cd3-b2d8-5de2162c42f3';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 const API_PREFIX = process.env.NEXT_PUBLIC_API_PREFIX ?? '/api';
+
 
 export const contratosApi = {
     /**
      * Genera el PDF del contrato de arrendamiento
      */
     generarContrato: async (data: GenerarContratoRequest): Promise<Contrato> => {
+        const userId = getUserIdFromToken();
+
+        if (!userId) {
+            throw new Error('No hay sesión activa. Por favor, inicia sesión.');
+        }
+
+        // El backend extraerá el userId del token JWT
         return api<Contrato>('/contratos/generar', {
             method: 'POST',
             body: data,
-            headers: {
-                'x-user-id': USER_ID,
-            },
+            auth: true
         });
     },
 
@@ -26,12 +33,19 @@ export const contratosApi = {
      * Retorna un Blob que puede ser descargado
      */
     descargarContrato: async (reservaId: string): Promise<Blob> => {
+        const userId = getUserIdFromToken();
+
+        if (!userId) {
+            throw new Error('No hay sesión activa. Por favor, inicia sesión.');
+        }
+
         const url = `${API_URL}${API_PREFIX}/contratos/${reservaId}/descargar`;
+        const token = tokenStorage.get();
 
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                'x-user-id': USER_ID,
+                'Authorization': token ? `Bearer ${token}` : '',
             },
         });
 
