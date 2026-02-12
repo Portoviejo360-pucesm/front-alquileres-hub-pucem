@@ -1,0 +1,327 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { useAuthStore } from '@/store/auth.store';
+import { reservasApi } from '@/lib/api/reservas.api';
+import { useRouter } from 'next/navigation';
+
+interface ReservasModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    propiedadId: number;
+    propiedadTitulo: string;
+}
+
+export default function ReservasModal({ isOpen, onClose, propiedadId, propiedadTitulo }: ReservasModalProps) {
+    const router = useRouter();
+    const { user } = useAuthStore();
+
+    const [fechaEntrada, setFechaEntrada] = useState('');
+    const [fechaSalida, setFechaSalida] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
+
+    // Prevent hydration mismatch
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+
+    const [formData, setFormData] = useState({
+        nombres: '',
+        cedula: '',
+        telefono: '',
+        correo: ''
+    });
+
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                nombres: user.nombresCompletos || '',
+                cedula: user.perfilVerificado?.cedulaRuc || '',
+                telefono: user.perfilVerificado?.telefonoContacto || '',
+                correo: user.correo || ''
+            });
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (isOpen && user) {
+            setFormData({
+                nombres: user.nombresCompletos || '',
+                cedula: user.perfilVerificado?.cedulaRuc || '',
+                telefono: user.perfilVerificado?.telefonoContacto || '',
+                correo: user.correo || ''
+            });
+            // Reset dates if needed, or keep them
+            setFechaEntrada('');
+            setFechaSalida('');
+            setSuccess(false);
+            setError(null);
+        }
+    }, [isOpen, user]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    // Set min dates
+    const today = new Date().toISOString().split('T')[0];
+    const [minSalida, setMinSalida] = useState(today);
+
+    useEffect(() => {
+        if (fechaEntrada) {
+            const entrada = new Date(fechaEntrada);
+            entrada.setDate(entrada.getDate() + 1);
+            setMinSalida(entrada.toISOString().split('T')[0]);
+
+            // Ajustar salida si es anterior a la nueva entrada
+            if (fechaSalida && new Date(fechaSalida) <= new Date(fechaEntrada)) {
+                setFechaSalida('');
+            }
+        }
+    }, [fechaEntrada, fechaSalida]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        try {
+            if (!user) throw new Error('Debes iniciar sesión para reservar');
+
+            const nuevaReserva = await reservasApi.crearReserva({
+                propiedadId,
+                fechaEntrada,
+                fechaSalida
+            });
+
+            setSuccess(true);
+            setTimeout(() => {
+                onClose();
+                router.push('/alquileres');
+            }, 2000);
+
+        } catch (err: any) {
+            setError(err.message || 'Error al procesar la reserva');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!isOpen || !mounted) return null;
+
+    const modalContent = (
+        <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 99999, // Ensure it's on top of everything
+            padding: '1rem'
+        }}>
+            <div style={{
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                width: '100%',
+                maxWidth: '500px',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                position: 'relative',
+                animation: 'modal-pop 0.3s ease-out'
+            }}>
+                <div className="modal-header">
+                    <h2 className="modal-title">Reservar Propiedad</h2>
+                    <button onClick={onClose} className="modal-close">&times;</button>
+                </div>
+
+                {success ? (
+                    <div style={{ padding: '2rem', textAlign: 'center' }}>
+                        <div style={{ color: 'green', fontSize: '3rem', marginBottom: '1rem' }}>✓</div>
+                        <h3>¡Reserva Exitosa!</h3>
+                        <p>Redirigiendo a tus reservas...</p>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit} style={{ padding: '1.5rem' }}>
+                        <div style={{ marginBottom: '1.5rem', backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px' }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>{propiedadTitulo}</h4>
+                            <p style={{ margin: 0, fontSize: '0.875rem', color: '#6b7280' }}>
+                                Completa tus datos para confirmar
+                            </p>
+                        </div>
+
+                        {error && (
+                            <div style={{
+                                backgroundColor: '#fee2e2',
+                                color: '#991b1b',
+                                padding: '0.75rem',
+                                borderRadius: '6px',
+                                marginBottom: '1rem',
+                                fontSize: '0.875rem'
+                            }}>
+                                {error}
+                            </div>
+                        )}
+
+                        {/* Datos del Usuario (Editable) */}
+                        <div className="form-group">
+                            <label>Nombres Completos</label>
+                            <input
+                                type="text"
+                                name="nombres"
+                                className="form-input"
+                                value={formData.nombres}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Cédula / RUC</label>
+                            <input
+                                type="text"
+                                name="cedula"
+                                className="form-input"
+                                value={formData.cedula}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+
+                        <div className="grid-2-cols">
+                            <div className="form-group">
+                                <label>Teléfono</label>
+                                <input
+                                    type="text"
+                                    name="telefono"
+                                    className="form-input"
+                                    value={formData.telefono}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Correo</label>
+                                <input
+                                    type="text"
+                                    name="correo"
+                                    className="form-input"
+                                    value={formData.correo}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                        </div>
+
+                        <hr style={{ margin: '1.5rem 0', border: '0', borderTop: '1px solid #e5e7eb' }} />
+
+                        {/* Fechas */}
+                        <div className="grid-2-cols">
+                            <div className="form-group">
+                                <label>Fecha Entrada</label>
+                                <input
+                                    type="date"
+                                    className="form-input"
+                                    value={fechaEntrada}
+                                    min={today}
+                                    onChange={(e) => setFechaEntrada(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Fecha Salida</label>
+                                <input
+                                    type="date"
+                                    className="form-input"
+                                    value={fechaSalida}
+                                    min={minSalida}
+                                    onChange={(e) => setFechaSalida(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="quick-action-btn secondary"
+                                style={{ flex: 1 }}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                className="quick-action-btn"
+                                style={{ flex: 1 }}
+                                disabled={loading}
+                            >
+                                {loading ? 'Procesando...' : 'Confirmar Reserva'}
+                            </button>
+                        </div>
+                    </form>
+                )}
+
+                <style jsx>{`
+          .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .modal-title {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #111827;
+          }
+          .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+          }
+          .form-group {
+            margin-bottom: 1rem;
+          }
+          .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+          }
+          .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+          }
+          .grid-2-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+          }
+          @keyframes modal-pop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+          }
+        `}</style>
+            </div>
+        </div>
+    );
+
+    return createPortal(modalContent, document.body);
+}

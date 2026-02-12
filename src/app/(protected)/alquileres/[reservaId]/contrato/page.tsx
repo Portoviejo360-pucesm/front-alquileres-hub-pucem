@@ -228,8 +228,11 @@ export default function ContratoPage() {
                         </h3>
                         <p style={{ marginBottom: '16px' }}>
                             El ARRENDATARIO se obliga a pagar la cantidad de
-                            ${reserva.propiedad?.precioMensual} mensuales, con un total de
-                            ${reserva.totalPagar} por el período contratado.
+                            ${reserva.propiedad?.precioMensual} mensuales.
+                        </p>
+                        <p style={{ marginBottom: '16px' }}>
+                            Por el período contratado (del {new Date(reserva.fechaEntrada).toLocaleDateString('es-ES', { timeZone: 'UTC' })} al {new Date(reserva.fechaSalida).toLocaleDateString('es-ES', { timeZone: 'UTC' })}),
+                            el valor total a pagar es de <strong>${reserva.totalPagar}</strong>.
                         </p>
 
                         <h3 style={{ marginTop: '24px', marginBottom: '12px' }}>

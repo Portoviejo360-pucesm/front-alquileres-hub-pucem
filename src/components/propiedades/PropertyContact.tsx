@@ -1,5 +1,10 @@
 'use client';
 
+import { useState } from 'react';
+import { useAuthStore } from '@/store/auth.store';
+import { useRouter } from 'next/navigation';
+import ReservasModal from '../reservas/ReservasModal';
+
 interface Arrendador {
   nombre: string;
   telefono: string;
@@ -7,6 +12,8 @@ interface Arrendador {
 }
 
 interface PropertyContactProps {
+  propiedadId: number;
+  propiedadTitulo: string;
   priceLabel: string;
   arrendador: Arrendador;
 }
@@ -37,7 +44,29 @@ const EmailIcon = () => (
   </svg>
 );
 
-export default function PropertyContact({ priceLabel, arrendador }: PropertyContactProps) {
+export default function PropertyContact({ propiedadId, propiedadTitulo, priceLabel, arrendador }: PropertyContactProps) {
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuthStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Check if current user is the owner
+  // Assuming arrendador.email is available to compare, or ideally ID if available. 
+  // For now, let's just show button if authenticated.
+  const isOwner = user?.correo === arrendador.email;
+
+  const handleReservarClick = () => {
+    console.log('Botón Reservar clickeado');
+    console.log('Estado autenticación:', isAuthenticated, user);
+
+    if (!isAuthenticated) {
+      console.log('Usuario no autenticado, redirigiendo...');
+      router.push('/auth/login');
+      return;
+    }
+    console.log('Abriendo modal...');
+    setIsModalOpen(true);
+  };
+
   return (
     <div>
       {/* Precio */}
@@ -92,11 +121,29 @@ export default function PropertyContact({ priceLabel, arrendador }: PropertyCont
             </a>
           )}
 
-          <button className="quick-action-btn" style={{ width: '100%', marginTop: '1rem' }}>
-            Contactar ahora
+          <button
+            onClick={handleReservarClick}
+            className="quick-action-btn"
+            style={{
+              width: '100%',
+              marginTop: '1rem',
+              backgroundColor: '#4f46e5', // Brand Primary explícito
+              color: 'white',
+              cursor: 'pointer',
+              display: 'block'
+            }}
+          >
+            Reservar ahora
           </button>
         </div>
       </div>
+
+      <ReservasModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        propiedadId={propiedadId}
+        propiedadTitulo={propiedadTitulo}
+      />
     </div>
   );
 }

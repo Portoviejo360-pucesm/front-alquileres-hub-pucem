@@ -11,7 +11,7 @@ import PropertyInfo from '@/components/propiedades/PropertyInfo';
 import PropertyContact from '@/components/propiedades/PropertyContact';
 import { useAuthStore } from '@/store/auth.store';
 import { propiedadesApi } from '@/lib/api/propiedades.api';
-import { 
+import {
   sanitizeProperty,
   getPropertyTitle,
   getPropertyLocation,
@@ -44,16 +44,16 @@ export default function PropiedadDetallesPage() {
   useEffect(() => {
     const fetchPropiedad = async () => {
       if (!params.id) return;
-      
+
       try {
         setLoading(true);
         setError(null);
         const data = await propiedadesApi.obtenerPorId(params.id as string);
-        
+
         if (!data) {
           throw new Error('Propiedad no encontrada');
         }
-        
+
         setRawPropiedad(data);
       } catch (err) {
         console.error('Error fetching propiedad:', err);
@@ -118,12 +118,12 @@ export default function PropiedadDetallesPage() {
   const estado = getPropertyStatus(propiedad);
   const priceLabel = getPropertyPriceLabel(propiedad);
   const amenities = getPropertyAmenities(propiedad);
-  
+
   // Verificar si tiene coordenadas
   const hasCoordinates = !!(
-    propiedad.lat && 
-    propiedad.lng && 
-    !isNaN(Number(propiedad.lat)) && 
+    propiedad.lat &&
+    propiedad.lng &&
+    !isNaN(Number(propiedad.lat)) &&
     !isNaN(Number(propiedad.lng))
   );
 
@@ -139,32 +139,32 @@ export default function PropiedadDetallesPage() {
   const selectedImage = images[selectedImageIndex] || mainImage;
 
   // Información adicional
-  const descripcion = propiedad.descripcion || propiedad.description || 
+  const descripcion = propiedad.descripcion || propiedad.description ||
     'Esta es una propiedad disponible para arriendo en excelente ubicación.';
-  
+
   const superficie = propiedad.superficie || propiedad.area || propiedad.metros_cuadrados;
   const habitaciones = propiedad.habitaciones || propiedad.bedrooms || propiedad.rooms;
   const banos = propiedad.banos || propiedad.bathrooms || propiedad.banios;
   const garaje = propiedad.garaje || propiedad.parking || propiedad.estacionamiento;
 
   // Contacto del arrendador
-  const arrendadorNombre = propiedad.arrendador?.nombre || 
-    propiedad.arrendador?.name || 
+  const arrendadorNombre = propiedad.arrendador?.nombre ||
+    propiedad.arrendador?.name ||
     'Arrendador disponible';
-  
-  const arrendadorTelefono = propiedad.arrendador?.telefono || 
-    propiedad.arrendador?.phone || 
+
+  const arrendadorTelefono = propiedad.arrendador?.telefono ||
+    propiedad.arrendador?.phone ||
     propiedad.arrendador?.celular;
-  
-  const arrendadorEmail = propiedad.arrendador?.email || 
+
+  const arrendadorEmail = propiedad.arrendador?.email ||
     propiedad.arrendador?.correo;
 
   const pageContent = (
     <div className="dashboard-container">
       {/* Header con botón volver */}
       <div className="dashboard-header" style={{ marginBottom: '1.5rem' }}>
-        <button 
-          onClick={() => router.back()} 
+        <button
+          onClick={() => router.back()}
           className="quick-action-btn secondary"
           style={{ marginBottom: '1rem' }}
         >
@@ -178,9 +178,9 @@ export default function PropiedadDetallesPage() {
       <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
         <div className="property-gallery">
           <div className="gallery-main">
-            <Image 
-              src={selectedImage} 
-              alt={title} 
+            <Image
+              src={selectedImage}
+              alt={title}
               fill
               className="gallery-main-image"
               style={{ objectFit: 'cover' }}
@@ -190,7 +190,7 @@ export default function PropiedadDetallesPage() {
               <EstadoBadge estado={estado} />
             </div>
           </div>
-          
+
           {images.length > 1 && (
             <div className="gallery-thumbnails">
               {images.map((img, index) => (
@@ -199,8 +199,8 @@ export default function PropiedadDetallesPage() {
                   onClick={() => setSelectedImageIndex(index)}
                   className={`gallery-thumbnail ${index === selectedImageIndex ? 'active' : ''}`}
                 >
-                  <Image 
-                    src={img} 
+                  <Image
+                    src={img}
                     alt={`${title} - Imagen ${index + 1}`}
                     fill
                     style={{ objectFit: 'cover' }}
@@ -244,7 +244,7 @@ export default function PropiedadDetallesPage() {
         />
 
         {/* Layout responsive: Desktop side-by-side, Mobile stacked */}
-        <div style={{ 
+        <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '1.5rem',
@@ -265,11 +265,11 @@ export default function PropiedadDetallesPage() {
             {(propiedad.esAmoblado !== undefined || propiedad.createdAt) && (
               <div className="dashboard-card" style={{ marginTop: '1.5rem' }}>
                 <h2 className="card-title">Información adicional</h2>
-                <div style={{ 
+                <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                   gap: '1rem',
-                  marginTop: '1rem' 
+                  marginTop: '1rem'
                 }}>
                   {propiedad.esAmoblado !== undefined && (
                     <div className="activity-item" style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
@@ -290,7 +290,7 @@ export default function PropiedadDetallesPage() {
                       </div>
                     </div>
                   )}
-                  
+
                   {propiedad.createdAt && (
                     <div className="activity-item" style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -320,13 +320,15 @@ export default function PropiedadDetallesPage() {
           </div>
 
           {/* Sidebar - Contacto (sticky en desktop) */}
-          <div style={{ 
-            position: 'sticky', 
-            top: '2rem', 
+          <div style={{
+            position: 'sticky',
+            top: '2rem',
             alignSelf: 'flex-start',
             minWidth: '280px'
           }}>
             <PropertyContact
+              propiedadId={Number(propiedad.id)}
+              propiedadTitulo={title}
               priceLabel={propiedad.priceLabel || '$0.00'}
               arrendador={{
                 nombre: propiedad.arrendador?.nombre || 'Arrendador disponible',
@@ -349,24 +351,24 @@ export default function PropiedadDetallesPage() {
             <p style={{ color: '#6b7280', marginBottom: '1rem', fontSize: '0.95rem' }}>
               {propiedad.location}
             </p>
-            <div style={{ 
-              height: '500px', 
-              borderRadius: '12px', 
-              overflow: 'hidden', 
+            <div style={{
+              height: '500px',
+              borderRadius: '12px',
+              overflow: 'hidden',
               border: '2px solid #e5e7eb',
               boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
             }}>
-              <MapDetail 
-                lat={Number(propiedad.lat)} 
+              <MapDetail
+                lat={Number(propiedad.lat)}
                 lng={Number(propiedad.lng)}
                 title={propiedad.title || 'Propiedad'}
                 address={propiedad.location || ''}
               />
             </div>
-            <div style={{ 
-              marginTop: '1rem', 
-              padding: '0.75rem 1rem', 
-              backgroundColor: '#f0fdf4', 
+            <div style={{
+              marginTop: '1rem',
+              padding: '0.75rem 1rem',
+              backgroundColor: '#f0fdf4',
               borderRadius: '8px',
               border: '1px solid #86efac',
               display: 'flex',
@@ -382,8 +384,8 @@ export default function PropiedadDetallesPage() {
             </div>
           </div>
         ) : (
-          <div className="dashboard-card" style={{ 
-            border: '2px solid #fbbf24', 
+          <div className="dashboard-card" style={{
+            border: '2px solid #fbbf24',
             backgroundColor: '#fffbeb',
             marginBottom: '2rem'
           }}>
@@ -414,11 +416,11 @@ export default function PropiedadDetallesPage() {
 }
 
 // Layout wrapper component
-function LayoutWrapper({ 
-  children, 
-  isAuthenticated 
-}: { 
-  children: React.ReactNode; 
+function LayoutWrapper({
+  children,
+  isAuthenticated
+}: {
+  children: React.ReactNode;
   isAuthenticated: boolean;
 }) {
   const content = (

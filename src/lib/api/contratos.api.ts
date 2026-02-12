@@ -6,7 +6,7 @@ import { getUserIdFromToken } from '@/lib/auth/jwt';
 import { tokenStorage } from '@/lib/auth/token';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
-const API_PREFIX = process.env.NEXT_PUBLIC_API_PREFIX ?? '/api';
+const API_PREFIX = process.env.NEXT_PUBLIC_API_PREFIX ?? '/api/v1';
 
 
 export const contratosApi = {
