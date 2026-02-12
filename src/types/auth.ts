@@ -32,6 +32,9 @@ export type PerfilResponse = {
     biografiaCorta?: string;
     estaVerificado: boolean;
     fechaSolicitud: string;
+    fotoDocumentoUrl?: string;
+    estadoVerificacion: 'NO_SOLICITADO' | 'PENDIENTE' | 'VERIFICADO' | 'RECHAZADO';
+    notasVerificacion?: string;
   };
   propiedades?: Array<{
     id: string;

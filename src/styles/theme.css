@@ -5,12 +5,143 @@
    ======================================== */
 
 :root {
-  --brand-green: #2d5a4c;      /* El verde oscuro corporativo */
-  --brand-bg: #f5f1e4;         /* El fondo crema */
-  --brand-red: #e11d48;        /* El rojo del logo */
-  --input-border: #d1e7dd;     /* Borde suave para inputs */
-  --white: #ffffff;
-  --text-dark: #111827;        /* Texto oscuro */
+  /* Legacy mapping for backward compatibility */
+  --brand-green: var(--color-primary);
+  --brand-bg: var(--color-accent);
+  --brand-red: var(--color-error);
+  --white: var(--text-inverted);
+  --text-dark: var(--text-main);
+
+  /* Additional legacy variables if needed */
+  --input-border: var(--card-border);
+}
+
+/* ========================================
+   LAYOUT PÚBLICO
+   ======================================== */
+
+.public-container {
+  min-height: 100vh;
+  background-color: var(--background);
+  display: flex;
+  flex-direction: column;
+}
+
+.public-main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* ========================================
+   INPUTS COMPARTIDOS
+   ======================================== */
+
+.auth-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--input-border);
+  font-size: 0.9375rem;
+  margin-bottom: 1.25rem;
+  outline: none;
+  color: var(--text-main);
+  background-color: var(--input-bg);
+  transition: all 0.2s ease;
+}
+
+.auth-input:focus {
+  border-color: var(--color-primary);
+  /* Ring effect via box-shadow */
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+  outline: none;
+}
+
+.auth-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ========================================
+   BOTONES COMPARTIDOS
+   ======================================== */
+
+.btn-ingresar {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  border: none;
+  background-color: var(--color-primary);
+  color: var(--text-inverted);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: 0.025em;
+  cursor: pointer;
+  margin-top: 0.625rem;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.btn-ingresar:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-ingresar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Botones ghost y register (usados en PublicTopBar) */
+.btn-ghost {
+  text-decoration: none;
+  font-size: 0.875rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  background: var(--card-bg);
+  transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: var(--background);
+  border-color: var(--text-muted);
+}
+
+.btn-register {
+  background-color: var(--color-primary);
+  color: var(--text-inverted);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.btn-register:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ========================================
@@ -128,6 +259,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

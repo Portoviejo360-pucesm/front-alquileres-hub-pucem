@@ -5,23 +5,60 @@
 @import "tailwindcss";
 
 :root {
+  /* Base Colors */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Brand Colors */
+  --color-primary: #2E5E4E;
+  /* Brand Green Dark */
+  --color-primary-light: #A3E4BE;
+  /* Brand Mint */
+  --color-secondary: #7C4F2C;
+  /* Brand Brown */
+  --color-accent: #FAFAF9;
+  /* Brand Cream */
+
+  /* Semantic Colors */
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Text Colors */
+  --text-main: #171717;
+  --text-secondary: #525252;
+  --text-muted: #737373;
+  --text-inverted: #ffffff;
+
+  /* Component Colors */
+  --card-bg: #ffffff;
+  --card-border: #e5e5e5;
+  --input-bg: #ffffff;
+  --input-border: #d4d4d4;
+
+  /* Layout */
+  --radius: 0.75rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Dark mode temporarily disabled to preserve original branding
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --text-main: #ededed;
+    --text-secondary: #a3a3a3;
+    --text-muted: #737373;
+    --text-inverted: #171717;
+
+    --card-bg: #171717;
+    --card-border: #262626;
+    --input-bg: #171717;
+    --input-border: #404040;
   }
 }
+*/
 
 body {
   background: var(--background);

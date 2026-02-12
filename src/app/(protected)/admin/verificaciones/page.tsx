@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/store/auth.store';
 import { getTodasVerificaciones, aprobarVerificacion, rechazarVerificacion } from '@/services/api';
 import AdminGuard from '@/components/guards/AdminGuard';
+import Modal from '@/components/ui/Modal';
 import '@/styles/components/arrendadores.css';
 
 interface PerfilVerificado {
@@ -319,45 +320,26 @@ function VerificacionesContent() {
             )}
 
             {/* Modal de Confirmación */}
-            {showModal && selectedVerificacion && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000
-                }}>
-                    <div style={{
-                        backgroundColor: 'white',
-                        borderRadius: '12px',
-                        padding: '24px',
-                        maxWidth: '500px',
-                        width: '90%',
-                        maxHeight: '80vh',
-                        overflow: 'auto'
-                    }}>
-                        <h2 style={{ marginBottom: '16px', fontSize: '1.5rem', fontWeight: '700' }}>
-                            {modalAction === 'aprobar' ? '✅ Aprobar Verificación' : '❌ Rechazar Verificación'}
-                        </h2>
-
-                        <div style={{ marginBottom: '20px' }}>
-                            <p><strong>Usuario:</strong> {selectedVerificacion.usuario.nombresCompletos}</p>
-                            <p><strong>Correo:</strong> {selectedVerificacion.usuario.correo}</p>
-                            <p><strong>Cédula/RUC:</strong> {selectedVerificacion.cedulaRuc}</p>
-                            <p><strong>Teléfono:</strong> {selectedVerificacion.telefonoContacto}</p>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={modalAction === 'aprobar' ? '✅ Aprobar Verificación' : '❌ Rechazar Verificación'}
+            >
+                {selectedVerificacion && (
+                    <div className="space-y-4">
+                        <div className="text-sm text-gray-500 dark:text-gray-400 p-3 bg-gray-50 dark:bg-zinc-800 rounded-lg">
+                            <p><strong className="text-gray-900 dark:text-white">Usuario:</strong> {selectedVerificacion.usuario.nombresCompletos}</p>
+                            <p><strong className="text-gray-900 dark:text-white">Correo:</strong> {selectedVerificacion.usuario.correo}</p>
+                            <p><strong className="text-gray-900 dark:text-white">Cédula/RUC:</strong> {selectedVerificacion.cedulaRuc}</p>
+                            <p><strong className="text-gray-900 dark:text-white">Teléfono:</strong> {selectedVerificacion.telefonoContacto}</p>
                             {selectedVerificacion.biografiaCorta && (
-                                <p><strong>Biografía:</strong> {selectedVerificacion.biografiaCorta}</p>
+                                <p><strong className="text-gray-900 dark:text-white">Biografía:</strong> {selectedVerificacion.biografiaCorta}</p>
                             )}
                         </div>
 
                         {modalAction === 'aprobar' ? (
-                            <div style={{ marginBottom: '20px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                                     Notas (opcional):
                                 </label>
                                 <textarea
@@ -365,18 +347,12 @@ function VerificacionesContent() {
                                     onChange={(e) => setNotas(e.target.value)}
                                     placeholder="Agregar notas sobre la aprobación..."
                                     rows={3}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px',
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '6px',
-                                        fontSize: '0.875rem'
-                                    }}
+                                    className="w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2 border"
                                 />
                             </div>
                         ) : (
-                            <div style={{ marginBottom: '20px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#dc2626' }}>
+                            <div>
+                                <label className="block text-sm font-medium text-red-600 dark:text-red-400 mb-2">
                                     Motivo de rechazo *:
                                 </label>
                                 <textarea
@@ -385,51 +361,35 @@ function VerificacionesContent() {
                                     placeholder="Explica por qué se rechaza la verificación..."
                                     rows={4}
                                     required
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px',
-                                        border: '1px solid #dc2626',
-                                        borderRadius: '6px',
-                                        fontSize: '0.875rem'
-                                    }}
+                                    className="w-full rounded-md border-red-300 dark:border-red-900 dark:bg-red-900/10 dark:text-white shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm p-2 border"
                                 />
                             </div>
                         )}
 
-                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                        <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                             <button
-                                onClick={() => setShowModal(false)}
-                                disabled={procesando}
-                                style={{
-                                    padding: '8px 16px',
-                                    borderRadius: '6px',
-                                    border: '1px solid #d1d5db',
-                                    backgroundColor: 'white',
-                                    cursor: procesando ? 'not-allowed' : 'pointer',
-                                    opacity: procesando ? 0.5 : 1
-                                }}
-                            >
-                                Cancelar
-                            </button>
-                            <button
+                                type="button"
+                                className={`inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2 ${modalAction === 'aprobar'
+                                    ? 'bg-emerald-600 hover:bg-emerald-500 focus-visible:outline-emerald-600'
+                                    : 'bg-red-600 hover:bg-red-500 focus-visible:outline-red-600'
+                                    } disabled:opacity-50 disabled:cursor-not-allowed`}
                                 onClick={confirmarAccion}
                                 disabled={procesando || (modalAction === 'rechazar' && !motivo.trim())}
-                                style={{
-                                    padding: '8px 16px',
-                                    borderRadius: '6px',
-                                    border: 'none',
-                                    backgroundColor: modalAction === 'aprobar' ? '#10b981' : '#dc2626',
-                                    color: 'white',
-                                    cursor: (procesando || (modalAction === 'rechazar' && !motivo.trim())) ? 'not-allowed' : 'pointer',
-                                    opacity: (procesando || (modalAction === 'rechazar' && !motivo.trim())) ? 0.5 : 1
-                                }}
                             >
                                 {procesando ? 'Procesando...' : (modalAction === 'aprobar' ? 'Aprobar' : 'Rechazar')}
                             </button>
+                            <button
+                                type="button"
+                                className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-zinc-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700 sm:col-start-1 sm:mt-0"
+                                onClick={() => setShowModal(false)}
+                                disabled={procesando}
+                            >
+                                Cancelar
+                            </button>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </Modal>
         </div>
     );
 }

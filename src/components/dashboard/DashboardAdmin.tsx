@@ -1,35 +1,90 @@
 // components/dashboard/DashboardAdmin.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { calcularEstadisticasGlobales, ACTIVIDADES_RECIENTES } from '@/lib/mockData/admin.mock';
+import { useAuthStore } from '@/store/auth.store';
+import { getAdminDashboardStats } from '@/services/api';
 import '@/styles/components/arrendadores.css';
 
 export default function DashboardAdmin() {
-  const stats = calcularEstadisticasGlobales();
+  const { token } = useAuthStore();
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Formatear fecha relativa
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!token) return;
+
+      try {
+        setLoading(true);
+        const response = await getAdminDashboardStats(token);
+        if (response.success) {
+          setStats(response.data);
+        } else {
+          setError('No se pudieron cargar las estadísticas');
+        }
+      } catch (err: any) {
+        console.error('Error cargando stats:', err);
+        setError('Error al conectar con el servidor');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [token]);
+
+  // Formatear fecha relativa (Placeholder, ya que no tenemos actividades recientes reales aún complejas)
   const formatearFechaRelativa = (fecha: string) => {
     const ahora = new Date();
     const fechaActividad = new Date(fecha);
     const diff = ahora.getTime() - fechaActividad.getTime();
-    
+
     const minutos = Math.floor(diff / 60000);
     const horas = Math.floor(diff / 3600000);
     const dias = Math.floor(diff / 86400000);
     const meses = Math.floor(diff / 2592000000);
-    
+
     if (minutos < 60) return `Hace ${minutos} minuto${minutos !== 1 ? 's' : ''}`;
     if (horas < 24) return `Hace ${horas} hora${horas !== 1 ? 's' : ''}`;
     if (dias < 30) return `Hace ${dias} día${dias !== 1 ? 's' : ''}`;
     return `Hace ${meses} mes${meses !== 1 ? 'es' : ''}`;
   };
 
+  if (loading) {
+    return (
+      <div className="dashboard-admin">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">Panel de Administración</h1>
+        </div>
+        <div className="loading-state">
+          <div className="spinner"></div>
+          <p>Cargando estadísticas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="dashboard-admin">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">Panel de Administración</h1>
+        </div>
+        <div className="error-state">
+          <p>{error || 'No hay datos disponibles'}</p>
+        </div>
+      </div>
+    );
+  }
+
   const statsCards = [
     {
       label: 'Total de Usuarios',
       value: stats.totalUsuarios.toString(),
-      change: `${stats.totalArrendadores} arrendadores`,
+      change: `${stats.totalArrendadores || 0} arrendadores`,
       changeType: 'info',
       icon: (
         <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
@@ -132,50 +187,7 @@ export default function DashboardAdmin() {
 
       {/* Sección de Actividad Reciente y Acciones Rápidas */}
       <div className="dashboard-content-grid">
-        {/* Actividad Reciente */}
-        <div className="dashboard-card">
-          <div className="card-header">
-            <h2 className="card-title">Actividad Reciente del Sistema</h2>
-            <Link href="/usuarios" className="card-link">
-              Ver todo
-            </Link>
-          </div>
-          <div className="activity-list">
-            {ACTIVIDADES_RECIENTES.slice(0, 5).map((actividad) => (
-              <div key={actividad.id} className="activity-item">
-                <div className={`activity-icon activity-icon-${actividad.tipo}`}>
-                  {actividad.tipo === 'registro' && (
-                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
-                    </svg>
-                  )}
-                  {actividad.tipo === 'verificacion' && (
-                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                  {actividad.tipo === 'propiedad' && (
-                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                    </svg>
-                  )}
-                  {actividad.tipo === 'solicitud' && (
-                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </div>
-                <div className="activity-content">
-                  <p className="activity-title">{actividad.titulo}</p>
-                  <p className="activity-description">{actividad.descripcion}</p>
-                  <p className="activity-time">{formatearFechaRelativa(actividad.fecha)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Acciones Rápidas */}
+        {/* Actividad Reciente: Mantenemos estructura pero indicamos que no hay datos en vivo aún de actividad detallada, o podríamos implementarlo luego */}
         <div className="dashboard-card">
           <div className="card-header">
             <h2 className="card-title">Acciones Rápidas</h2>

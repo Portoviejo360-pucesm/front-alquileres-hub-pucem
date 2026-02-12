@@ -18,6 +18,8 @@ export default function PerfilPage() {
     direccion: '',
     ciudad: 'Portoviejo',
     esArrendadorVerificado: user?.perfilVerificado?.estaVerificado || false,
+    estadoVerificacion: user?.perfilVerificado?.estadoVerificacion || 'NO_SOLICITADO',
+    notasVerificacion: user?.perfilVerificado?.notasVerificacion,
     fechaRegistro: user?.fechaRegistro || ''
   };
 
@@ -44,6 +46,19 @@ export default function PerfilPage() {
       .join('')
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const getStatusBadge = () => {
+    switch (userData.estadoVerificacion) {
+      case 'VERIFICADO':
+        return <span className="perfil-status verificado">✓ Arrendador Verificado</span>;
+      case 'PENDIENTE':
+        return <span className="perfil-status pendiente" style={{ backgroundColor: '#fef3c7', color: '#d97706' }}>⏳ Verificación Pendiente</span>;
+      case 'RECHAZADO':
+        return <span className="perfil-status rechazada" style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}>✗ Verificación Rechazada</span>;
+      default:
+        return <span className="perfil-status normal">Usuario Regular</span>;
+    }
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -73,15 +88,8 @@ export default function PerfilPage() {
 
       // Actualizar el usuario en el store
       if (user) {
-        setUser({
-          ...user,
-          nombresCompletos: editData.nombre,
-          perfilVerificado: {
-            ...user.perfilVerificado!,
-            telefonoContacto: editData.telefono,
-            cedulaRuc: editData.cedula
-          }
-        });
+        // Recargar usuario completo para obtener estado actualizado
+        await useAuthStore.getState().loadUser();
       }
 
       setIsEditing(false);
@@ -138,6 +146,8 @@ export default function PerfilPage() {
         });
 
         alert('Solicitud enviada exitosamente. Recibirás una notificación cuando sea procesada.');
+        // Recargar usuario para actualizar estado
+        await useAuthStore.getState().loadUser();
       } catch (error: any) {
         console.error('Error:', error);
         alert(error.message || 'Error al enviar solicitud');
@@ -168,9 +178,7 @@ export default function PerfilPage() {
             </div>
             <h2 className="perfil-name">{userData.nombre}</h2>
             <p className="perfil-email">{userData.email}</p>
-            <span className={`perfil-status ${userData.esArrendadorVerificado ? 'verificado' : 'pendiente'}`}>
-              {userData.esArrendadorVerificado ? '✓ Arrendador Verificado' : 'Usuario Regular'}
-            </span>
+            {getStatusBadge()}
             <button className="btn-upload-avatar">
               <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
@@ -201,7 +209,7 @@ export default function PerfilPage() {
         {/* Main Content */}
         <div className="perfil-main">
           {/* Alert de verificación */}
-          {!userData.esArrendadorVerificado && (
+          {userData.estadoVerificacion === 'NO_SOLICITADO' && (
             <div className="verificacion-alert">
               <div className="verificacion-icon warning">
                 <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
@@ -220,6 +228,67 @@ export default function PerfilPage() {
                 >
                   Solicitar Verificación
                 </button>
+              </div>
+            </div>
+          )}
+
+          {userData.estadoVerificacion === 'PENDIENTE' && (
+            <div className="verificacion-alert notification" style={{ backgroundColor: '#eff6ff', borderLeft: '4px solid #3b82f6' }}>
+              <div className="verificacion-icon" style={{ color: '#3b82f6' }}>
+                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="verificacion-content">
+                <h3 className="verificacion-title" style={{ color: '#1e3a8a' }}>Verificación en Proceso</h3>
+                <p className="verificacion-text" style={{ color: '#1e40af' }}>
+                  Tu solicitud ha sido enviada y está siendo revisada por nuestros administradores. Te notificaremos cuando haya una actualización.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {userData.estadoVerificacion === 'RECHAZADO' && (
+            <div className="verificacion-alert error" style={{ backgroundColor: '#fef2f2', borderLeft: '4px solid #ef4444' }}>
+              <div className="verificacion-icon" style={{ color: '#ef4444' }}>
+                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="verificacion-content">
+                <h3 className="verificacion-title" style={{ color: '#7f1d1d' }}>Verificación Rechazada</h3>
+                <p className="verificacion-text" style={{ color: '#991b1b' }}>
+                  Tu solicitud de verificación no pudo ser aprobada.
+                  {userData.notasVerificacion && (
+                    <span style={{ display: 'block', marginTop: '8px', fontStyle: 'italic' }}>
+                      " {userData.notasVerificacion} "
+                    </span>
+                  )}
+                </p>
+                <button
+                  className="btn-solicitar-verificacion"
+                  onClick={handleSolicitarVerificacion}
+                  disabled={loading}
+                  style={{ backgroundColor: '#dc2626', marginTop: '12px' }}
+                >
+                  Volver a Solicitar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {userData.estadoVerificacion === 'VERIFICADO' && (
+            <div className="verificacion-alert success" style={{ backgroundColor: '#ecfdf5', borderLeft: '4px solid #10b981' }}>
+              <div className="verificacion-icon" style={{ color: '#10b981' }}>
+                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="verificacion-content">
+                <h3 className="verificacion-title" style={{ color: '#064e3b' }}>¡Eres un Arrendador Verificado!</h3>
+                <p className="verificacion-text" style={{ color: '#065f46' }}>
+                  Tu perfil ha sido verificado correctamente. Ahora puedes publicar tus propiedades con confianza y acceder a todas las funcionalidades.
+                </p>
               </div>
             </div>
           )}

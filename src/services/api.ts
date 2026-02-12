@@ -149,6 +149,22 @@ export const getTodasVerificaciones = async (token: string, filtros?: {
   return res.json();
 };
 
+export const getAdminDashboardStats = async (token: string) => {
+  const res = await fetch(`${API_URL}${API_PREFIX}/admin/verificaciones/dashboard-stats`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error('Error al obtener estadísticas del dashboard');
+  }
+
+  return res.json();
+};
+
 export const aprobarVerificacion = async (token: string, perfilId: number, notas?: string) => {
   const res = await fetch(`${API_URL}${API_PREFIX}/admin/verificaciones/${perfilId}/aprobar`, {
     method: 'POST',
