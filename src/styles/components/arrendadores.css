@@ -368,14 +368,14 @@
 .form-input,
 .form-select,
 .form-textarea {
-  padding: 10px 16px;
+  width: 100%;
+  padding: 12px 16px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 15px;
-  color: var(--text-dark);
-  outline: none;
-  transition: border-color 0.2s;
-  background: var(--white);
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #1f2937;
 }
 
 .form-input:focus,

@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useState, useEffect, use } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { propiedadesApi } from '@/lib/api/propiedades.api';
+import { ImageUpload } from '@/components/ui/ImageUpload';
+import { LocationPicker } from '@/components/ui/LocationPicker';
 
-export default function EditPropiedadPage() {
+export default function EditPropiedadPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
+  const { id } = use(params);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
@@ -18,8 +21,11 @@ export default function EditPropiedadPage() {
     esAmoblado: false,
     estadoId: '1',
     publicoObjetivoId: '1',
-    arrendadorId: '1'
+    latitudMapa: -1.05458,
+    longitudMapa: -80.45445
   });
+
+  const [fotos, setFotos] = useState<string[]>([]);
 
   const [servicios] = useState([
     { id: 1, nombre: 'Agua' },
@@ -31,23 +37,44 @@ export default function EditPropiedadPage() {
 
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState<number[]>([]);
 
-  // Cargar datos de la propiedad
   useEffect(() => {
-    // TODO: Cargar desde API
-    const propiedadMock = {
-      titulo: 'Departamento Moderno en el Centro',
-      descripcion: 'Hermoso departamento de 2 habitaciones con vista panorámica.',
-      direccion: 'Av. Universitaria #123, Portoviejo',
-      precio: '350',
-      esAmoblado: true,
-      estadoId: '1',
-      publicoObjetivoId: '1',
-      arrendadorId: '1'
+    const fetchPropiedad = async () => {
+      try {
+        const response = await propiedadesApi.obtenerPorId(id);
+        const prop = (response as any).data || response;
+
+        setFormData({
+          titulo: prop.tituloAnuncio || '',
+          descripcion: prop.descripcion || '',
+          direccion: prop.direccionTexto || '',
+          precio: prop.precioMensual?.toString() || '',
+          esAmoblado: prop.esAmoblado || false,
+          estadoId: prop.estadoId?.toString() || '1',
+          publicoObjetivoId: prop.publicoObjetivoId?.toString() || '1',
+          latitudMapa: Number(prop.latitudMapa) || -1.05458,
+          longitudMapa: Number(prop.longitudMapa) || -80.45445
+        });
+
+        if (prop.fotos) {
+          // Ordenar por esPrincipal primero
+          const sortedFotos = [...prop.fotos].sort((a, b) => (b.esPrincipal ? 1 : 0) - (a.esPrincipal ? 1 : 0));
+          setFotos(sortedFotos.map((f: any) => f.urlImagen));
+        }
+
+        if (prop.servicios) {
+          setServiciosSeleccionados(prop.servicios.map((s: any) => s.servicioId));
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error al cargar propiedad:', error);
+        alert('Error al cargar la propiedad');
+        router.push('/propiedades');
+      }
     };
-    
-    setFormData(propiedadMock);
-    setServiciosSeleccionados([1, 2, 3, 5]); // Agua, Luz, Internet, Gas
-  }, [id]);
+
+    fetchPropiedad();
+  }, [id, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -65,40 +92,66 @@ export default function EditPropiedadPage() {
     );
   };
 
+  const handleLocationChange = (lat: number, lng: number) => {
+    setFormData(prev => ({ ...prev, latitudMapa: lat, longitudMapa: lng }));
+  };
+
+  const handleImagesChange = (urls: string[]) => {
+    setFotos(urls);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setSaving(true);
 
     try {
-      const propiedadData = {
-        ...formData,
-        precio: parseFloat(formData.precio),
+      if (fotos.length === 0) {
+        alert('Debes subir al menos una foto');
+        setSaving(false);
+        return;
+      }
+
+      const payload = {
+        tituloAnuncio: formData.titulo,
+        descripcion: formData.descripcion,
+        precioMensual: parseFloat(formData.precio),
+        direccionTexto: formData.direccion,
+        latitudMapa: formData.latitudMapa,
+        longitudMapa: formData.longitudMapa,
+        esAmoblado: formData.esAmoblado,
+        estadoId: parseInt(formData.estadoId),
+        publicoObjetivoId: parseInt(formData.publicoObjetivoId),
         servicios: serviciosSeleccionados.map(id => ({
           servicioId: id,
           incluidoEnPrecio: true
+        })),
+        fotos: fotos.map((url, index) => ({
+          urlImagen: url,
+          esPrincipal: index === 0
         }))
       };
 
-      // TODO: Llamar al API
-      console.log('Actualizar propiedad:', id, propiedadData);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await propiedadesApi.actualizar(id, payload);
+
       alert('Propiedad actualizada exitosamente');
-      router.push(`/propiedades/${id}`);
-    } catch (error) {
+      router.push('/propiedades');
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Error al actualizar propiedad');
+      alert(error.message || 'Error al actualizar propiedad');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
+
+  if (loading) {
+    return <div className="p-8 text-center">Cargando datos de la propiedad...</div>;
+  }
 
   return (
     <div className="propiedad-form-container">
       <div className="form-header">
         <h1 className="form-title">Editar Propiedad</h1>
-        <p className="form-subtitle">Actualiza la información de la propiedad</p>
+        <p className="form-subtitle">Actualiza la información de tu propiedad</p>
       </div>
 
       <div className="form-card">
@@ -106,7 +159,7 @@ export default function EditPropiedadPage() {
           {/* Información Básica */}
           <div className="form-section">
             <h3 className="form-section-title">Información Básica</h3>
-            
+
             <div className="form-row single">
               <div className="form-group">
                 <label className="form-label required">Título del Anuncio</label>
@@ -118,6 +171,7 @@ export default function EditPropiedadPage() {
                   onChange={handleChange}
                   required
                   placeholder="Ej: Departamento moderno cerca de la PUCE"
+                  minLength={10}
                 />
               </div>
             </div>
@@ -132,6 +186,7 @@ export default function EditPropiedadPage() {
                   onChange={handleChange}
                   required
                   placeholder="Describe las características principales de la propiedad..."
+                  minLength={50}
                 />
               </div>
             </div>
@@ -186,7 +241,7 @@ export default function EditPropiedadPage() {
           {/* Ubicación */}
           <div className="form-section">
             <h3 className="form-section-title">Ubicación</h3>
-            
+
             <div className="form-row single">
               <div className="form-group">
                 <label className="form-label required">Dirección</label>
@@ -201,12 +256,21 @@ export default function EditPropiedadPage() {
                 />
               </div>
             </div>
+
+            <div className="form-group">
+              <label className="form-label">Ubicación en Mapa</label>
+              <LocationPicker
+                onLocationChange={handleLocationChange}
+                initialLat={formData.latitudMapa}
+                initialLng={formData.longitudMapa}
+              />
+            </div>
           </div>
 
           {/* Público Objetivo */}
           <div className="form-section">
             <h3 className="form-section-title">Público Objetivo</h3>
-            
+
             <div className="form-row single">
               <div className="form-group">
                 <label className="form-label required">Dirigido a</label>
@@ -229,7 +293,7 @@ export default function EditPropiedadPage() {
           {/* Servicios */}
           <div className="form-section">
             <h3 className="form-section-title">Servicios Incluidos</h3>
-            
+
             <div className="servicios-grid">
               {servicios.map(servicio => (
                 <div key={servicio.id} className="servicio-item">
@@ -248,17 +312,23 @@ export default function EditPropiedadPage() {
             </div>
           </div>
 
+          {/* Fotos */}
+          <div className="form-section">
+            <h3 className="form-section-title">Fotografías</h3>
+            <ImageUpload onImagesChange={handleImagesChange} initialImages={fotos} />
+          </div>
+
           {/* Acciones */}
           <div className="form-actions">
-            <Link href={`/propiedades/${id}`} className="btn-cancelar">
+            <Link href="/propiedades" className="btn-cancelar">
               Cancelar
             </Link>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn-guardar"
-              disabled={loading}
+              disabled={saving}
             >
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
+              {saving ? 'Guardando...' : 'Actualizar Propiedad'}
             </button>
           </div>
         </form>

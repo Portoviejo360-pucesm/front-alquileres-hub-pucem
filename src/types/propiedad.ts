@@ -42,7 +42,7 @@ export type Propiedad = {
   images?: string[];
   image?: string;
   createdAt?: string;
-  
+
   // Información adicional
   superficie?: number;
   area?: number;
@@ -56,7 +56,7 @@ export type Propiedad = {
   garaje?: boolean | string | number;
   parking?: boolean | string | number;
   estacionamiento?: boolean | string | number;
-  
+
   // Arrendador
   arrendador?: Arrendador;
 
@@ -74,14 +74,23 @@ export type Propiedad = {
 };
 
 export type PropiedadCreate = {
-  // lo que pide crearPropiedadSchema
-  direccion: string;
-  precio: number;
-  estadoId: string;
-  publicoObjetivoId?: string;
-  esAmoblado?: boolean;
-  serviciosIds?: string[];
-  fotos?: string[];
+  tituloAnuncio: string;
+  descripcion?: string;
+  precioMensual: number;
+  direccionTexto?: string;
+  latitudMapa: number;
+  longitudMapa: number;
+  esAmoblado: boolean;
+  estadoId: number;
+  publicoObjetivoId?: number;
+  servicios: {
+    servicioId: number;
+    incluidoEnPrecio: boolean;
+  }[];
+  fotos: {
+    urlImagen: string;
+    esPrincipal: boolean;
+  }[];
 };
 
 export type PropiedadUpdate = Partial<PropiedadCreate>;

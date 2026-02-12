@@ -23,16 +23,17 @@ export function usePropiedades() {
         const res = await getPropiedades();
 
         const normalizadas = res.data.map((p: any) => ({
-          id: p.id_propiedad, // 🔑 CLAVE ÚNICA
-          lat: Number(p.latitud_mapa),
-          lng: Number(p.longitud_mapa),
-          price: `$${p.precio_mensual}`,
-          precioMensual: p.precio_mensual,
-          title: p.titulo_anuncio,
-          image:
-            'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267',
-          location: p.direccion_texto,
-          estado: p.estado,
+          id: p.id || p.propiedadId, // Backend usa 'id' en /registro
+          lat: Number(p.latitudMapa),
+          lng: Number(p.longitudMapa),
+          price: `$${p.precioMensual}`,
+          precioMensual: p.precioMensual,
+          title: p.tituloAnuncio,
+          image: p.fotos?.[0]?.urlImagen ||
+            'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267', // Fallback
+          location: p.direccionTexto,
+          estado: p.estado?.nombre || p.estado,
+          fotos: p.fotos || [],
         }));
 
         setPropiedades(normalizadas);

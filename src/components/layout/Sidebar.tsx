@@ -28,14 +28,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       roles: ['all'] // visible para todos
     },
     {
-      name: 'Propiedades',
-      href: '/propiedades',
+      name: 'Mapa',
+      href: '/mapa',
       icon: (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          <path fillRule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clipRule="evenodd" />
         </svg>
       ),
-      roles: ['admin', 'arrendador']
+      roles: ['all'] // Mapa público para todos
     },
     // Opciones solo para Administrador
     {
@@ -61,7 +61,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     // Opciones solo para Arrendadores verificados
     {
       name: 'Mis Propiedades',
-      href: '/mis-propiedades',
+      href: '/propiedades',
       icon: (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />

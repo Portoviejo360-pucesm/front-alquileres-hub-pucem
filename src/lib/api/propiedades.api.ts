@@ -27,14 +27,14 @@ export const propiedadesApi = {
     api<Propiedad>(`/propiedades/${id}`, { auth: false }),
 
   misPropiedades: () =>
-    api<Propiedad[]>(`/propiedades/mis-propiedades`, { auth: true }),
+    api<Propiedad[]>(`/propiedades/registro/mis-propiedades`, { auth: true }),
 
   crear: (payload: PropiedadCreate) =>
-    api<Propiedad>(`/propiedades`, { method: "POST", body: payload, auth: true }),
+    api<Propiedad>(`/propiedades/registro`, { method: "POST", body: payload, auth: true }),
 
   actualizar: (id: string, payload: PropiedadUpdate) =>
-    api<Propiedad>(`/propiedades/${id}`, { method: "PUT", body: payload, auth: true }),
+    api<Propiedad>(`/propiedades/registro/${id}`, { method: "PUT", body: payload, auth: true }),
 
   eliminar: (id: string) =>
-    api<{ message: string }>(`/propiedades/${id}`, { method: "DELETE", auth: true }),
+    api<{ message: string }>(`/propiedades/registro/${id}`, { method: "DELETE", auth: true }),
 };

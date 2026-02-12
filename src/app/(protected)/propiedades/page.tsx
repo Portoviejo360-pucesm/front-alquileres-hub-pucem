@@ -47,14 +47,14 @@ export default function PropiedadesPage() {
   // Filtrar propiedades
   const propiedadesFiltradas = propiedades.filter(prop => {
     const matchSearch = !filters.search ||
-      prop.titulo?.toLowerCase().includes(filters.search.toLowerCase()) ||
-      prop.direccion?.toLowerCase().includes(filters.search.toLowerCase());
+      prop.tituloAnuncio?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      prop.direccionTexto?.toLowerCase().includes(filters.search.toLowerCase());
 
     const matchEstado = filters.estado === 'todos' ||
-      prop.estado?.nombre === filters.estado;
+      prop.estado?.nombre?.toLowerCase() === filters.estado;
 
-    const matchPrecio = (!filters.precioMin || prop.precioMensual >= Number(filters.precioMin)) &&
-      (!filters.precioMax || prop.precioMensual <= Number(filters.precioMax));
+    const matchPrecio = (!filters.precioMin || prop.precioMensual >= parseFloat(filters.precioMin)) &&
+      (!filters.precioMax || prop.precioMensual <= parseFloat(filters.precioMax));
 
     const matchAmoblado = filters.amoblado === 'todos' ||
       (filters.amoblado === 'si' ? prop.esAmoblado : !prop.esAmoblado);
@@ -73,7 +73,7 @@ export default function PropiedadesPage() {
               Gestiona tus propiedades publicadas
             </p>
           </div>
-          <Link href="/mis-propiedades" className="btn-nuevo">
+          <Link href="/propiedades/new" className="btn-nuevo">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
             </svg>
@@ -93,7 +93,9 @@ export default function PropiedadesPage() {
                 padding: '10px 12px',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
-                fontSize: '14px'
+                fontSize: '14px',
+                color: '#1f2937',
+                backgroundColor: '#ffffff'
               }}
             />
 
@@ -104,7 +106,9 @@ export default function PropiedadesPage() {
                 padding: '10px 12px',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
-                fontSize: '14px'
+                fontSize: '14px',
+                color: '#1f2937',
+                backgroundColor: '#ffffff'
               }}
             >
               <option value="todos">Todos los estados</option>
@@ -122,7 +126,9 @@ export default function PropiedadesPage() {
                 padding: '10px 12px',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
-                fontSize: '14px'
+                fontSize: '14px',
+                color: '#1f2937',
+                backgroundColor: '#ffffff'
               }}
             />
 
@@ -135,7 +141,9 @@ export default function PropiedadesPage() {
                 padding: '10px 12px',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
-                fontSize: '14px'
+                fontSize: '14px',
+                color: '#1f2937',
+                backgroundColor: '#ffffff'
               }}
             />
 
@@ -146,7 +154,9 @@ export default function PropiedadesPage() {
                 padding: '10px 12px',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
-                fontSize: '14px'
+                fontSize: '14px',
+                color: '#1f2937',
+                backgroundColor: '#ffffff'
               }}
             >
               <option value="todos">Amoblado/No amoblado</option>
@@ -191,7 +201,7 @@ export default function PropiedadesPage() {
                 : 'Intenta ajustar los filtros de búsqueda'}
             </p>
             {propiedades.length === 0 ? (
-              <Link href="/mis-propiedades" className="quick-action-btn">
+              <Link href="/propiedades/new" className="quick-action-btn">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
@@ -214,7 +224,7 @@ export default function PropiedadesPage() {
                 <div style={{
                   height: '200px',
                   backgroundColor: '#f3f4f6',
-                  backgroundImage: prop.imagenes?.[0] ? `url(${prop.imagenes[0]})` : 'none',
+                  backgroundImage: prop.fotos?.[0]?.urlImagen ? `url(${prop.fotos[0].urlImagen})` : 'none',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   position: 'relative'
@@ -225,10 +235,11 @@ export default function PropiedadesPage() {
                     right: '12px',
                     padding: '6px 12px',
                     borderRadius: '6px',
-                    backgroundColor: prop.estado?.nombre === 'disponible' ? '#10b981' : '#f59e0b',
+                    backgroundColor: prop.estado?.nombre?.toLowerCase() === 'disponible' ? '#10b981' : '#f59e0b',
                     color: 'white',
                     fontSize: '12px',
-                    fontWeight: '600'
+                    fontWeight: '600',
+                    textTransform: 'uppercase'
                   }}>
                     {prop.estado?.nombre || 'Sin estado'}
                   </div>
@@ -236,11 +247,11 @@ export default function PropiedadesPage() {
 
                 {/* Contenido */}
                 <div style={{ padding: '16px' }}>
-                  <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '8px' }}>
-                    {prop.titulo || 'Sin título'}
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '8px', color: '#111827' }}>
+                    {prop.tituloAnuncio || 'Sin título'}
                   </h3>
                   <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '12px' }}>
-                    📍 {prop.direccion || 'Sin dirección'}
+                    📍 {prop.direccionTexto || 'Sin dirección'}
                   </p>
                   <div style={{
                     display: 'flex',
@@ -249,16 +260,32 @@ export default function PropiedadesPage() {
                     paddingTop: '12px',
                     borderTop: '1px solid #e5e7eb'
                   }}>
-                    <span style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--brand-primary)' }}>
+                    <span style={{ fontSize: '1.25rem', fontWeight: '700', color: '#dc2626' }}>
                       ${prop.precioMensual || 0}/mes
                     </span>
                     <Link
-                      href={`/propiedades/${prop.id}/editar`}
+                      href={`/propiedades/${prop.id}/edit`}
                       className="quick-action-btn secondary"
-                      style={{ padding: '8px 16px', fontSize: '14px' }}
+                      style={{ padding: '8px 16px', fontSize: '14px', marginRight: '8px' }}
                     >
                       Editar
                     </Link>
+                    <button
+                      onClick={() => {
+                        if (confirm('¿Estás seguro de eliminar esta propiedad?')) {
+                          propiedadesApi.eliminar(prop.id)
+                            .then(() => {
+                              setPropiedades(prev => prev.filter(p => p.id !== prop.id));
+                              alert('Propiedad eliminada');
+                            })
+                            .catch(err => alert('Error al eliminar: ' + err.message));
+                        }
+                      }}
+                      className="quick-action-btn danger"
+                      style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
+                    >
+                      Eliminar
+                    </button>
                   </div>
                 </div>
               </div>

@@ -11,7 +11,7 @@ import type {
 // TEMPORAL: Conectar directamente al backend de auth (puerto 8001)
 // hasta resolver el problema del proxy en el API Gateway
 const AUTH_API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
-const AUTH_API_PREFIX = "/api/auth";
+const AUTH_API_PREFIX = "/api/v1/auth";
 
 
 async function authFetch<T>(path: string, options: RequestInit = {}): Promise<T> {

@@ -1,5 +1,7 @@
 export function getColorByEstado(estado: string) {
-  switch (estado) {
+  const estadoUpper = estado?.toUpperCase() || '';
+
+  switch (estadoUpper) {
     case 'DISPONIBLE':
       return 'bg-green-500';
     case 'OCUPADO':
