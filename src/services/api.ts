@@ -1,3 +1,5 @@
+import { tokenStorage } from '@/lib/auth/token';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
 const API_PREFIX = '/api';
@@ -58,3 +60,34 @@ export const getUsuarios = async (token: string) => {
 
   return res.json();
 };
+
+/**
+ * Generic API helper function for authenticated requests
+ */
+export async function api<T>(
+  endpoint: string,
+  options?: RequestInit
+): Promise<T> {
+  const token = tokenStorage.get();
+
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+    ...(options?.headers || {}),
+  };
+
+  const config: RequestInit = {
+    ...options,
+    headers,
+  };
+
+  const url = `${API_URL}${API_PREFIX}${endpoint}`;
+  const res = await fetch(url, config);
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ message: 'Error desconocido' }));
+    throw new Error(errorData.message || `Error ${res.status}: ${res.statusText}`);
+  }
+
+  return res.json();
+}
