@@ -127,7 +127,7 @@ export default function PropertyContact({ propiedadId, propiedadTitulo, priceLab
             style={{
               width: '100%',
               marginTop: '1rem',
-              backgroundColor: '#4f46e5', // Brand Primary explícito
+              backgroundColor: '#2E5E4E',
               color: 'white',
               cursor: 'pointer',
               display: 'block'

@@ -18,7 +18,6 @@ function clamp(n: number, a: number, b: number) {
 }
 
 function money(n: number) {
-  // Formato simple tipo Amazon
   return `$${Math.round(n).toLocaleString('en-US')}`;
 }
 
@@ -48,28 +47,32 @@ export default function PriceSlider({
     onChange({ min: safeMin, max: nextMax });
   };
 
-  const rangeText = `${money(safeMin)} – ${money(safeMax)}${showMore ? ' y más' : ''}`;
+  const rangeText = `${money(safeMin)} – ${money(safeMax)}${showMore ? '+' : ''}`;
+
+  const accentColor = '#2E5E4E';
+  const inactiveColor = '#d1d5db';
 
   return (
     <div className="w-full">
-      {/* Texto tipo Amazon */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-semibold text-gray-900">Precio</div>
-        <div className="text-sm font-semibold text-gray-900">{rangeText}</div>
+      {/* Rango texto */}
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-xs text-gray-500">
+          {!active ? 'Sin filtro' : rangeText}
+        </div>
       </div>
 
       {/* Barra */}
-      <div className="relative h-10">
+      <div className="relative h-6">
         {/* Track base */}
-        <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-2 rounded-full bg-gray-200" />
+        <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-gray-200" />
 
-        {/* Track activo (entre min y max) */}
+        {/* Track activo */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 h-2 rounded-full transition-all"
+          className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full transition-all"
           style={{
             left: `${minPercent}%`,
             right: `${100 - maxPercent}%`,
-            background: active ? '#dc2626' : '#9ca3af', // rojo o gris
+            background: active ? accentColor : inactiveColor,
           }}
         />
 
@@ -93,10 +96,10 @@ export default function PriceSlider({
             pointerEvents: 'none',
             WebkitAppearance: 'none',
             appearance: 'none',
-            height: '2rem',
+            height: '1.5rem',
             margin: 0,
           }}
-          aria-label="Precio mínimo"
+          aria-label="Precio minimo"
         />
         <input
           type="range"
@@ -117,55 +120,46 @@ export default function PriceSlider({
             pointerEvents: 'none',
             WebkitAppearance: 'none',
             appearance: 'none',
-            height: '2rem',
+            height: '1.5rem',
             margin: 0,
           }}
-          aria-label="Precio máximo"
+          aria-label="Precio maximo"
         />
-
-        {/* Etiquetas min / max */}
-        <div className="absolute left-0 bottom-0 text-xs text-gray-500">{money(min)}</div>
-        <div className="absolute right-0 bottom-0 text-xs text-gray-500">{money(max)}</div>
-      </div>
-
-      {/* Estado */}
-      <div className="mt-1 text-xs text-gray-500">
-        {!active ? 'Sin filtro de precio (mueve la barra para aplicar)' : 'Filtro de precio aplicado'}
       </div>
 
       <style dangerouslySetInnerHTML={{
         __html: `
           .price-slider-input::-webkit-slider-runnable-track {
             background: transparent;
-            height: 0.5rem;
+            height: 0.375rem;
           }
 
           .price-slider-input::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             pointer-events: all;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 9999px;
             background: #ffffff;
-            border: 3px solid ${active ? '#dc2626' : '#9ca3af'};
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            border: 2.5px solid ${active ? accentColor : inactiveColor};
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
             cursor: pointer;
           }
 
           .price-slider-input::-moz-range-track {
             background: transparent;
-            height: 0.5rem;
+            height: 0.375rem;
           }
 
           .price-slider-input::-moz-range-thumb {
             pointer-events: all;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 9999px;
             background: #ffffff;
-            border: 3px solid ${active ? '#dc2626' : '#9ca3af'};
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            border: 2.5px solid ${active ? accentColor : inactiveColor};
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
             cursor: pointer;
           }
         `

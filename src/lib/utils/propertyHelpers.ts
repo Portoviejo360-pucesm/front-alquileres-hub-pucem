@@ -19,15 +19,43 @@ export function parsePrice(value: unknown): number | null {
 }
 
 /**
+ * Mapeo de nombres de servicios de la BD a keys de filtro.
+ */
+const SERVICE_NAME_TO_KEY: Record<string, string> = {
+  'internet / wifi': 'internet',
+  'internet/wifi': 'internet',
+  'internet': 'internet',
+  'wifi': 'internet',
+  'agua potable': 'agua_potable',
+  'luz electrica': 'luz_electrica',
+  'bano privado': 'bano_privado',
+  'cocina compartida': 'cocina_compartida',
+  'garaje': 'garaje',
+  'aire acondicionado': 'aire_acondicionado',
+  'zona lavanderia': 'zona_lavanderia',
+};
+
+/**
  * Normaliza una clave de amenidad removiendo acentos y espacios.
  */
 export function normalizeAmenityKey(s: string): string {
-  return String(s)
+  const stripped = String(s)
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+
+  // Check direct map first
+  if (SERVICE_NAME_TO_KEY[stripped]) {
+    return SERVICE_NAME_TO_KEY[stripped];
+  }
+
+  // Fallback: normalize to snake_case
+  return stripped
     .replace(/\s+/g, '_')
-    .replace(/[^\w_]/g, '');
+    .replace(/[^\w_]/g, '')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
 }
 
 // ==================== EXTRACTORES DE DATOS ====================

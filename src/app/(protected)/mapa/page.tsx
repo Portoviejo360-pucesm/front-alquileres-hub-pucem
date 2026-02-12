@@ -18,7 +18,7 @@ import {
   getPropertyAmenities,
   normalizeAmenityKey,
 } from '@/lib/utils/propertyHelpers';
-import type { AmenityKey } from '@/components/ui/AmenitiesDrawer';
+import type { AmenityKey } from '@/components/PropertyFilters';
 import type { PriceRange } from '@/components/ui/PriceSlider';
 import type { Propiedad } from '@/types/propiedad';
 
@@ -35,7 +35,6 @@ export default function MapaPage() {
   const router = useRouter();
   const { propiedades, loading, error } = usePropiedades();
 
-  // Conectar socket para actualizaciones en tiempo real
   usePropiedadesSocket();
 
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -50,13 +49,11 @@ export default function MapaPage() {
     const selectedAmenities = amenities.map(normalizeAmenityKey);
 
     let filtered = (propiedades as Propiedad[]).filter((propiedad) => {
-      // Filtro de búsqueda por texto
       const title = getPropertyTitle(propiedad);
       const location = getPropertyLocation(propiedad);
       const matchText = !searchQuery ||
         `${title} ${location}`.toLowerCase().includes(searchQuery);
 
-      // Filtro de precio
       const rawPrice = propiedad.precio ?? propiedad.precioMensual ?? propiedad.price;
       const numericPrice = parsePrice(rawPrice);
 
@@ -70,7 +67,6 @@ export default function MapaPage() {
           (openEnded ? numericPrice >= min : numericPrice >= min && numericPrice <= max);
       }
 
-      // Filtro de amenidades
       const propAmenities = getPropertyAmenities(propiedad);
       const matchAmenities = selectedAmenities.length === 0 ||
         selectedAmenities.every(amenity => propAmenities.includes(amenity));
@@ -78,14 +74,11 @@ export default function MapaPage() {
       return matchText && matchPrice && matchAmenities;
     });
 
-    // Filtro por bounds del mapa
     if (mapBounds) {
       filtered = filtered.filter((propiedad) => {
         const lat = Number(propiedad.lat);
         const lng = Number(propiedad.lng);
-
         if (isNaN(lat) || isNaN(lng)) return false;
-
         return (
           lat >= mapBounds.south &&
           lat <= mapBounds.north &&
@@ -101,11 +94,7 @@ export default function MapaPage() {
   const handleToggleFavorite = (id: string) => {
     setFavorites((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
   };
@@ -122,54 +111,36 @@ export default function MapaPage() {
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: 'var(--brand-bg)'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            border: '4px solid #e5e7eb',
-            borderTopColor: 'var(--brand-primary)',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 16px'
-          }} />
-          <p style={{ color: '#6b7280', fontSize: '14px' }}>
-            Cargando propiedades...
-          </p>
+      <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 70px)' }}>
+        <div className="text-center">
+          <div className="animate-spin w-10 h-10 border-4 border-gray-200 rounded-full mx-auto mb-3"
+            style={{ borderTopColor: '#2E5E4E' }} />
+          <p className="text-sm text-gray-500">Cargando propiedades...</p>
         </div>
-        <style jsx>{`
-          @keyframes spin {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-        `}</style>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="dashboard-card" style={{ margin: '2rem auto', maxWidth: '600px', textAlign: 'center', padding: '3rem' }}>
-        <p style={{ color: '#ef4444', marginBottom: '1rem' }}>{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="quick-action-btn"
-        >
-          Reintentar
-        </button>
+      <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 70px)' }}>
+        <div className="text-center">
+          <p className="text-red-500 mb-3">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white"
+            style={{ backgroundColor: '#2E5E4E' }}
+          >
+            Reintentar
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <>
+    <div className="mapa-page-layout">
+      {/* Sidebar filtros estilo Amazon */}
       <PropertyFilters
         search={search}
         onSearchChange={setSearch}
@@ -181,7 +152,8 @@ export default function MapaPage() {
         onClearFilters={handleClearFilters}
       />
 
-      <main className="properties-main-container">
+      {/* Area principal: cards + mapa */}
+      <main className="mapa-page-content">
         <div className="properties-layout">
           {/* Listado de propiedades */}
           <section className={`properties-grid-section ${showMapMobile ? 'mobile-hidden' : ''}`}>
@@ -189,10 +161,10 @@ export default function MapaPage() {
               <h2 className="properties-header-title">
                 {propiedadesFiltradas.length}{' '}
                 {propiedadesFiltradas.length === 1 ? 'propiedad disponible' : 'propiedades disponibles'}
-                {mapBounds && ' en esta área'}
+                {mapBounds && ' en esta area'}
               </h2>
               <p className="properties-header-subtitle">
-                Mostrando {propiedadesFiltradas.length} de {propiedades.length} • Portoviejo, Manabí
+                Mostrando {propiedadesFiltradas.length} de {propiedades.length} &bull; Portoviejo, Manabi
               </p>
             </div>
 
@@ -217,13 +189,14 @@ export default function MapaPage() {
                 })}
               </div>
             ) : (
-              <div className="dashboard-card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-                <p style={{ color: '#6b7280', fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-                  No se encontraron propiedades que coincidan con tus criterios de búsqueda.
+              <div className="flex flex-col items-center justify-center py-16 px-6">
+                <p className="text-gray-500 text-center mb-4">
+                  No se encontraron propiedades con estos filtros.
                 </p>
                 <button
                   onClick={handleClearFilters}
-                  className="quick-action-btn"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-white"
+                  style={{ backgroundColor: '#2E5E4E' }}
                 >
                   Limpiar filtros
                 </button>
@@ -239,16 +212,16 @@ export default function MapaPage() {
             />
           </section>
 
-          {/* Botón toggle móvil */}
+          {/* Boton toggle movil */}
           <button
             onClick={() => setShowMapMobile(!showMapMobile)}
             className="mobile-toggle-btn"
             aria-label={showMapMobile ? 'Ver lista' : 'Ver mapa'}
           >
-            {showMapMobile ? '📋 Ver Lista' : '🗺️ Ver Mapa'}
+            {showMapMobile ? 'Ver Lista' : 'Ver Mapa'}
           </button>
         </div>
       </main>
-    </>
+    </div>
   );
 }

@@ -3,12 +3,12 @@ export function getColorByEstado(estado: string) {
 
   switch (estadoUpper) {
     case 'DISPONIBLE':
-      return 'bg-green-500';
+      return 'badge-disponible';
     case 'OCUPADO':
-      return 'bg-red-500';
+      return 'badge-ocupado';
     case 'MANTENIMIENTO':
-      return 'bg-yellow-500';
+      return 'badge-mantenimiento';
     default:
-      return 'bg-gray-400';
+      return 'badge-default';
   }
 }
