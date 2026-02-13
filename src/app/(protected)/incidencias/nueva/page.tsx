@@ -52,7 +52,7 @@ export default function NuevaIncidenciaPage() {
             setPropiedades(propiedadesData);
 
             if (propiedadesData.length === 0) {
-                setError('No tienes propiedades con contratos activos. Solo puedes reportar incidencias en propiedades que actualmente ocupas.');
+                setError('No tienes propiedades disponibles para reportar incidencias.');
             }
         } catch (err: any) {
             setError(err.message || 'Error al cargar datos');

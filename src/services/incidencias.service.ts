@@ -81,7 +81,7 @@ export class IncidenciasService {
             });
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api${INCIDENCIAS_BASE}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1${INCIDENCIAS_BASE}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${tokenStorage.get()}`,
@@ -216,7 +216,7 @@ export class IncidenciasService {
         formData.append('file', file);
 
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api${INCIDENCIAS_BASE}/${incidenciaId}/adjuntos`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/v1${INCIDENCIAS_BASE}/${incidenciaId}/adjuntos`,
             {
                 method: 'POST',
                 headers: {

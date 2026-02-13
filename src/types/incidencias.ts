@@ -49,6 +49,7 @@ export interface Incidencia {
     prioridad: Prioridad;
     categoria?: Categoria;
     propiedad: {
+        id_propiedad: number;
         titulo_anuncio: string;
     };
     reportante?: {

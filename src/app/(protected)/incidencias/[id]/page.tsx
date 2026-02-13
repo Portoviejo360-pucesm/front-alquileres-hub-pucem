@@ -187,11 +187,27 @@ export default function IncidenciaDetailPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium text-gray-500">Estado</label>
-                                    <p className="text-gray-900 mt-1">{incidencia.estado.nombre}</p>
+                                    <div className="mt-1">
+                                        <span className={`px-2 py-1 rounded text-xs font-medium uppercase ${incidencia.estado.codigo === 'pendiente' ? 'bg-gray-100 text-gray-800' :
+                                            incidencia.estado.codigo === 'en_proceso' ? 'bg-blue-100 text-blue-800' :
+                                                incidencia.estado.codigo === 'resuelto' ? 'bg-green-100 text-green-800' :
+                                                    'bg-purple-100 text-purple-800'
+                                            }`}>
+                                            {incidencia.estado.nombre}
+                                        </span>
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-gray-500">Prioridad</label>
-                                    <p className="text-gray-900 mt-1">{incidencia.prioridad.nombre}</p>
+                                    <div className="mt-1">
+                                        <span className={`px-2 py-1 rounded text-xs font-medium uppercase ${incidencia.prioridad.codigo === 'urgente' ? 'bg-red-100 text-red-800' :
+                                            incidencia.prioridad.codigo === 'alta' ? 'bg-orange-100 text-orange-800' :
+                                                incidencia.prioridad.codigo === 'media' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-green-100 text-green-800'
+                                            }`}>
+                                            {incidencia.prioridad.nombre}
+                                        </span>
+                                    </div>
                                 </div>
                                 {incidencia.categoria && (
                                     <div>
@@ -203,6 +219,20 @@ export default function IncidenciaDetailPage() {
                                     <label className="text-sm font-medium text-gray-500">Propiedad</label>
                                     <p className="text-gray-900 mt-1">{incidencia.propiedad.titulo_anuncio}</p>
                                 </div>
+                                {isLandlordOrAdmin && incidencia?.reportante && (
+                                    <div className="col-span-2 border-t pt-4 mt-2">
+                                        <label className="text-sm font-medium text-gray-500">Reportado por</label>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+                                                {incidencia.reportante?.nombres_completos?.charAt(0) || '?'}
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-900">{incidencia.reportante?.nombres_completos}</p>
+                                                <p className="text-xs text-gray-500">{incidencia.reportante?.correo}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
