@@ -45,7 +45,8 @@ export const MOCK_USUARIOS: PerfilResponse[] = [
       telefonoContacto: '+593987654321',
       biografiaCorta: 'Arrendadora con 5 años de experiencia en el mercado inmobiliario de Portoviejo',
       estaVerificado: true,
-      fechaSolicitud: '2024-03-12T00:00:00.000Z'
+      fechaSolicitud: '2024-03-12T00:00:00.000Z',
+      estadoVerificacion: 'VERIFICADO' as const
     },
     propiedades: [
       {
@@ -84,7 +85,8 @@ export const MOCK_USUARIOS: PerfilResponse[] = [
       telefonoContacto: '+593912345678',
       biografiaCorta: 'Propietario de viviendas familiares',
       estaVerificado: false,
-      fechaSolicitud: '2024-07-22T09:30:00.000Z'
+      fechaSolicitud: '2024-07-22T09:30:00.000Z',
+      estadoVerificacion: 'PENDIENTE' as const
     },
     propiedades: []
   },
@@ -116,7 +118,8 @@ export const MOCK_USUARIOS: PerfilResponse[] = [
       telefonoContacto: '+593998877665',
       biografiaCorta: 'Inversionista inmobiliario',
       estaVerificado: true,
-      fechaSolicitud: '2024-02-15T00:00:00.000Z'
+      fechaSolicitud: '2024-02-15T00:00:00.000Z',
+      estadoVerificacion: 'VERIFICADO' as const
     },
     propiedades: [
       {
@@ -149,7 +152,8 @@ export const MOCK_USUARIOS: PerfilResponse[] = [
       telefonoContacto: '+593987123456',
       biografiaCorta: 'Propietaria de departamentos',
       estaVerificado: false,
-      fechaSolicitud: '2026-01-25T10:00:00.000Z' // Solicitud muy reciente
+      fechaSolicitud: '2026-01-25T10:00:00.000Z', // Solicitud muy reciente
+      estadoVerificacion: 'PENDIENTE' as const
     },
     propiedades: []
   }

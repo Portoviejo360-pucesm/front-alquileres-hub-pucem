@@ -1,0 +1,26 @@
+# Node modules (se instalan en el build)
+node_modules
+.next
+
+# Archivos de entorno
+.env
+.env.local
+.env.production
+.env.development
+
+# Git
+.git
+.gitignore
+
+# Dev tools
+.vscode
+.eslintcache
+*.log
+
+# Archivos de Claude
+CLAUDE.md
+.claude
+
+# Test
+coverage
+cypress

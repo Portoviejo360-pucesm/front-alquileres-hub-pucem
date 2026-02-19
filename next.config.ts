@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  // Necesario para Docker con imagen minima
+  output: 'standalone',
   // Empty turbopack config to silence the warning
   // Most apps work fine with Turbopack without configuration
   turbopack: {},
